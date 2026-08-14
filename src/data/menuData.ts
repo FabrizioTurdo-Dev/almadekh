@@ -1,0 +1,158 @@
+import type { Category } from '../types'
+
+export const DEFAULT_MENU: Category[] = [
+  {
+    id: 'cat-cafe', name: 'Cafetería',
+    items: [
+      { id: 'c1', name: 'Ristretto', desc: 'Extra corto y concentrado', price: 2500 },
+      { id: 'c2', name: 'Expresso', desc: 'Corto y concentrado clásico', price: 2500 },
+      { id: 'c3', name: 'Doble / Americano', desc: 'Doble medida de café negro', price: 3500 },
+      { id: 'c4', name: 'Jarrito', desc: 'Café en medida mediana', price: 3000 },
+      { id: 'c5', name: 'Café con Leche', desc: 'Con leche a elección', price: 4800 },
+      { id: 'c6', name: 'Capuccino', desc: 'Clásico con espuma de leche, canela/cacao', price: 4900 },
+      { id: 'c7', name: 'Lágrima', desc: 'Leche con una nota concentrada de expresso', price: 5000 },
+      { id: 'c8', name: 'Affogato', desc: 'Café doble con dos bochas de crema americana', price: 6800 },
+      { id: 'c9', name: 'Coffee Monkey', desc: 'Licuado de banana con leche + expresso', price: 7500 },
+      { id: 'c10', name: 'Té en hebras', desc: 'Consultar sabores disponibles', price: 3500 },
+      { id: 'c11', name: 'Té en saquito', desc: 'Consultar sabores disponibles', price: 3000 },
+      { id: 'c12', name: 'Tostado', desc: '2 árabes con jamón, queso y tomate', price: 6500 },
+      { id: 'c13', name: 'Revuelto', desc: '6 huevos + jamón + muzza', price: 10000 },
+      { id: 'c14', name: 'Pool Coffee', desc: 'Café XXL', price: 15000 },
+    ],
+  },
+  {
+    id: 'cat-combos', name: 'Combos & Sugerencias',
+    items: [
+      { id: 's1', name: 'Jarrito + Exprimido + 1 Medialuna', desc: 'Combo Desayuno/Merienda', price: 5000 },
+      { id: 's2', name: 'Doble + Exprimido + 2 Medialunas', desc: 'Combo completo', price: 7000 },
+      { id: 's3', name: 'Doble + Exprimido + 2 Medialunas J&Q', desc: 'Combo salado', price: 8000 },
+      { id: 's4', name: 'Doble + Porción de Budín', desc: 'Variedad de budines caseros', price: 9000 },
+      { id: 's5', name: 'Submarino + Porción de Torta', desc: 'Chocolatada con torta a elección', price: 14000 },
+      { id: 's6', name: 'XXL: Pool Coffee + Tostado', desc: 'Café XXL con tostado', price: 20000 },
+      { id: 's7', name: 'XXL: Doble + Revueltos J&Q + Palta + Tostadas', desc: 'Desayuno proteico completo', price: 20000 },
+      { id: 's8', name: 'XXL: Exprimido + Rollitos J&Q + Bowl Frutas', desc: 'Opción fresca y saludable', price: 18000 },
+      { id: 's9', name: 'XXL: Tostado o Revuelto + Pool Coffee', desc: 'Combo XXL para compartir', price: 17000 },
+    ],
+  },
+  {
+    id: 'cat-pasteleria', name: 'Pastelería',
+    items: [
+      { id: 'p1', name: 'Tortas Clásicas', desc: 'Porción, consultar variedad del día', price: 8000 },
+      { id: 'p2', name: 'Tortas Especiales / Lingote', desc: 'Recetas de la casa', price: 9500 },
+      { id: 'p3', name: 'Porción de Budín', desc: 'Limón, marmolado, frutos secos', price: 4500 },
+      { id: 'p4', name: 'Cookies Artesanales', desc: 'Por unidad', price: 4000 },
+      { id: 'p5', name: 'Alfajores de la Casa', desc: 'Dulce de leche o chocolate', price: 4000 },
+      { id: 'p6', name: 'Roll de Canela', desc: 'Artesanal', price: 4500 },
+      { id: 'p7', name: 'Tartas Dulces', desc: 'Porción individual', price: 5000 },
+      { id: 'p8', name: 'Medialuna Dulce', desc: 'Medialuna de manteca', price: 2000 },
+    ],
+  },
+  {
+    id: 'cat-salados', name: 'Salados',
+    items: [
+      { id: 'sal1', name: 'Medialuna con Jamón y Queso', desc: 'Calientita', price: 3000 },
+      { id: 'sal2', name: 'Scon con Muzza y Tomate', desc: 'Scon salado relleno', price: 7500 },
+      { id: 'sal3', name: 'Chipa', desc: 'Por unidad, receta tradicional con queso', price: 4000 },
+      { id: 'sal4', name: 'Chipa con Jamón y Queso', desc: 'Relleno calentito', price: 7500 },
+    ],
+  },
+  {
+    id: 'cat-sandwicheria', name: 'Sandwichería',
+    items: [
+      { id: 'sw1', name: 'Sándwich Jamón y Queso', desc: 'En pan artesanal', price: 8000 },
+      { id: 'sw2', name: 'Sándwich Muzza y Cebolla', desc: 'En pan artesanal', price: 10500 },
+      { id: 'sw3', name: 'Sándwich Muzza, Cebolla y Jamón', desc: 'En pan artesanal', price: 11000 },
+      { id: 'sw4', name: 'Sándwich Muzza, Palta y Huevo', desc: 'En pan artesanal', price: 14000 },
+      { id: 'sw5', name: 'Brunch', desc: 'Disponible 11:30 a 13:30', price: 38000 },
+      { id: 'sw6', name: 'Tenner', desc: 'Disponible 16:30 a 18:30', price: 38000 },
+    ],
+  },
+  {
+    id: 'cat-entradas', name: 'Entradas & Ensaladas',
+    items: [
+      { id: 'ent1', name: 'Bastoncitos de Muzza x4 + Filetto', desc: 'Entrada crocante', price: 13000 },
+      { id: 'ent2', name: 'Rabas', desc: 'Porción con limón', price: 18000 },
+      { id: 'ent3', name: 'Papas c/ Cheddar y Bacon', desc: 'Porción abundante', price: 10000 },
+      { id: 'ens1', name: 'Ensalada César', desc: 'Lechuga, croutons, parmesano y aderezo', price: 10000 },
+      { id: 'ens2', name: 'Ensalada César con Pollo', desc: 'Pollo, lechuga, croutons, parmesano', price: 17000 },
+      { id: 'ens3', name: 'Ensalada 3 Ingredientes', desc: 'A elección', price: 12000 },
+      { id: 'ens4', name: 'Ensalada 4+ Ingredientes', desc: 'A elección', price: 15000 },
+    ],
+  },
+  {
+    id: 'cat-milanesas', name: 'Milanesas',
+    items: [
+      { id: 'mil1', name: 'Milanesa de Carne', desc: 'Incluye guarnición', price: 18000 },
+      { id: 'mil2', name: 'Milanesa de Pollo', desc: 'Incluye guarnición', price: 18000 },
+      { id: 'mil3', name: 'Milanesa de Peceto', desc: 'Incluye guarnición', price: 20000 },
+      { id: 'mil4', name: 'Napolitana', desc: 'Carne o pollo con guarnición', price: 22000 },
+      { id: 'mil5', name: 'A Caballo', desc: 'Con huevo frito y guarnición', price: 22000 },
+      { id: 'mil6', name: 'Fugazzeta', desc: 'Con cebolla y queso, incluye guarnición', price: 22000 },
+      { id: 'mil7', name: 'Hawaiana', desc: 'Con jamón y piña, incluye guarnición', price: 22000 },
+      { id: 'mil8', name: 'A la Riojana', desc: 'Con jamón, morrón y huevo, incluye guarnición', price: 22000 },
+    ],
+  },
+  {
+    id: 'cat-carnes', name: 'Carnes & Pescados',
+    items: [
+      { id: 'pl1', name: 'Bife de Chorizo', desc: 'A la parrilla/plancha con guarnición', price: 28000 },
+      { id: 'pl2', name: 'Bondiola de Cerdo', desc: 'Con guarnición a elección', price: 20000 },
+      { id: 'pl3', name: 'Costillita de Cerdo', desc: 'Con guarnición a elección', price: 25000 },
+      { id: 'pl4', name: 'Bife', desc: 'Con guarnición a elección', price: 20000 },
+      { id: 'pl5', name: 'Suprema de Pollo', desc: 'Con guarnición a elección', price: 18000 },
+      { id: 'pl6', name: 'Pata / Muslo', desc: 'Con guarnición a elección', price: 18000 },
+      { id: 'pl7', name: 'Filet de Merluza', desc: 'Con guarnición a elección', price: 17000 },
+      { id: 'pl8', name: 'Trucha', desc: 'Con guarnición a elección', price: 30000 },
+      { id: 'pl9', name: 'Salmón', desc: 'A la plancha con vegetales o papas', price: 40000 },
+      { id: 'pl10', name: 'Merluza Negra', desc: 'Con guarnición a elección', price: 22000 },
+    ],
+  },
+  {
+    id: 'cat-pastas', name: 'Pastas & Arroces',
+    items: [
+      { id: 'pas1', name: 'Ravioles Caseros', desc: 'Con salsa a elección', price: 18000 },
+      { id: 'pas2', name: 'Ñoquis de Papa', desc: 'Con salsa a elección', price: 18000 },
+      { id: 'pas3', name: 'Tallarines al Huevo', desc: 'Con salsa a elección', price: 18000 },
+      { id: 'ar1', name: 'Risotto', desc: 'Cremoso de la casa', price: 24000 },
+      { id: 'ar2', name: 'Arroz con Mariscos', desc: 'Especialidad de la casa', price: 25000 },
+      { id: 'ar3', name: 'Arroz con Pollo', desc: 'Con verduras salteadas', price: 20000 },
+      { id: 'ar4', name: 'Wok de Verduras', desc: 'Salteado con salsa de soja', price: 18000 },
+    ],
+  },
+  {
+    id: 'cat-pizzas', name: 'Pizzas & Empanadas',
+    items: [
+      { id: 'piz1', name: 'Pizza Común (Muzzarella)', desc: '8 porciones, la clásica', price: 18000 },
+      { id: 'piz2', name: 'Pizza Especial (Fugazzeta/Napolitana)', desc: '8 porciones', price: 22000 },
+      { id: 'emp1', name: 'Empanada Individual', desc: 'Carne, Pollo, Bondiola, J&Q, Caprese, Humita, Ciruela/Panceta', price: 2500 },
+    ],
+  },
+  {
+    id: 'cat-bebidas', name: 'Bebidas',
+    items: [
+      { id: 'b1', name: 'Gaseosa en Lata', desc: '354ml varias opciones', price: 5000 },
+      { id: 'b2', name: 'Gaseosa en Botella', desc: '500ml', price: 5800 },
+      { id: 'b3', name: 'Limonada (vaso)', desc: 'Menta y jengibre', price: 7000 },
+      { id: 'b4', name: 'Limonada 1 Litro', desc: 'Menta y jengibre', price: 15000 },
+      { id: 'b5', name: 'Exprimido de Naranja (vaso)', desc: '100% natural', price: 7000 },
+      { id: 'b6', name: 'Exprimido de Naranja 1 Litro', desc: '100% natural', price: 15000 },
+      { id: 'b7', name: 'Licuado de 2 Frutas', desc: 'Con agua o leche', price: 9500 },
+      { id: 'b8', name: 'Licuado de 3 Frutas', desc: 'Con agua o leche', price: 11000 },
+      { id: 'b9', name: 'Cerveza en Lata', desc: '', price: 3000 },
+      { id: 'b10', name: 'Cerveza en Botella', desc: '', price: 6000 },
+      { id: 'b11', name: 'Cerveza Tirada (Pinta)', desc: 'Artesanal', price: 5500 },
+      { id: 'b12', name: 'Copa de Vino', desc: 'Tinto, blanco o rosado', price: 5000 },
+    ],
+  },
+  {
+    id: 'cat-postres', name: 'Postres',
+    items: [
+      { id: 'pos1', name: 'Panqueques c/ Dulce de Leche o Crema', desc: 'Dos panqueques con acompañante a elección', price: 13000 },
+      { id: 'pos2', name: 'Bocha de Helado', desc: 'Crema americana', price: 6000 },
+      { id: 'pos3', name: 'Queso y Dulce (Vigilante)', desc: 'Clásico postre argentino', price: 6000 },
+      { id: 'pos4', name: 'Porción de Torta', desc: 'Consultar variedad del día', price: 8000 },
+    ],
+  },
+]
+
+export const FIXED_CATEGORY_IDS = DEFAULT_MENU.map(c => c.id)
