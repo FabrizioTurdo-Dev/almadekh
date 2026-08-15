@@ -3,7 +3,6 @@ import { Home, ClipboardList, User, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useAuthStore } from '../../store/authStore'
 
 const navItems = [
   { path: '/', icon: Home, label: 'Inicio' },
@@ -26,12 +25,7 @@ const navbarRoot = typeof document !== 'undefined'
 export function BottomNav() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user } = useAuthStore()
   const [isOverHero, setIsOverHero] = useState(true)
-
-  const visibleNavItems = navItems.filter(
-    (item) => item.path !== '/admin' || user
-  )
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +45,7 @@ export function BottomNav() {
         : 'bg-almadekh-bg/95 border-almadekh-border'
     }`}>
       <div className="flex justify-around items-center max-w-lg mx-auto">
-        {visibleNavItems.map((item) => {
+        {navItems.map((item) => {
           const isActive = location.pathname === item.path
           const Icon = item.icon
           return (
@@ -80,7 +74,6 @@ export function TopNav() {
   const navigate = useNavigate()
   const [mobileMenu, setMobileMenu] = useState(false)
   const [isOverHero, setIsOverHero] = useState(true)
-  const { user } = useAuthStore()
 
   const isLanding = location.pathname === '/'
 
@@ -132,9 +125,7 @@ export function TopNav() {
           }`}>Alma Dekh</span>
         </button>
         <div className="flex items-center gap-1">
-          {navItems
-            .filter((item) => item.path !== '/admin' || user)
-            .map((item) => {
+          {navItems.map((item) => {
               const isActive = location.pathname === item.path
               const Icon = item.icon
               return (
@@ -225,9 +216,7 @@ export function TopNav() {
                   Páginas
                 </p>
                 <div className="space-y-1">
-                  {navItems
-                    .filter((item) => item.path !== '/admin' || user)
-                    .map((item) => {
+                  {navItems.map((item) => {
                       const Icon = item.icon
                       return (
                         <button
