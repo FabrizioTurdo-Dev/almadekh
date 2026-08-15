@@ -4,6 +4,7 @@ import { Calendar, Clock, ArrowRight, X } from 'lucide-react'
 import { useEventStore } from '../../store/eventStore'
 import { FloatingNotes } from '../decorative/FloatingNotes'
 import { BaroqueOrnament } from '../decorative/BaroqueOrnament'
+import { Gallery } from './Gallery'
 import { loadSettings, getTelPhone } from '../../lib/settings'
 
 function formatDate(dateStr: string) {
@@ -192,6 +193,33 @@ export function Eventos() {
             </div>
           </>
         )}
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="mt-20"
+        >
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-[10px] tracking-[3px] uppercase text-almadekh-teal font-semibold block mb-2"
+          >
+            Memorias
+          </motion.span>
+          <motion.h3
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-2xl md:text-3xl font-serif font-bold text-almadekh-text mb-6"
+          >
+            Galería de Encuentros
+          </motion.h3>
+          <Gallery onPreview={setPreviewUrl} />
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
