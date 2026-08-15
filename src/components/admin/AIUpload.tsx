@@ -27,7 +27,7 @@ export function AIUpload({ onUpload }: Props) {
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,.heic,.heif"
         onChange={handleFile}
         className="hidden"
       />
