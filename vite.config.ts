@@ -13,6 +13,7 @@ export default defineConfig({
       workbox: {
         navigateFallback: '/index.html',
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,jpg}'],
+        globIgnores: ['**/heic-worker-*.js'],
         cleanupOutdatedCaches: true,
       },
       manifest: {

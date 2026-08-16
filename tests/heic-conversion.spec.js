@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 const BASE = 'http://127.0.0.1:4175'
 const CSP_PATTERN = /Content Security Policy|unsafe-eval|EvalError|violates/i
 
-async function loadConversion(page, pageName) {
+async function loadConversion(page, { pageName, file }) {
   const errors = []
   page.on('console', (msg) => {
     if (msg.type() === 'error') errors.push(msg.text())
@@ -11,18 +11,42 @@ async function loadConversion(page, pageName) {
   page.on('pageerror', (err) => errors.push(String(err)))
   page.on('weberror', (err) => errors.push(String(err.error)))
 
-  await page.goto(`${BASE}/${pageName}`)
+  const url = new URL(`${BASE}/${pageName}`)
+  if (file) url.searchParams.set('file', file)
+  await page.goto(url.toString())
   await page.waitForFunction(() => {
     const raw = window.__RESULT__
     return raw && JSON.parse(raw).error !== 'not-run'
   })
-  return { result: JSON.parse(await page.evaluate(() => window.__RESULT__)), errors }
+  return {
+    result: JSON.parse(await page.evaluate(() => window.__RESULT__)),
+    errors,
+  }
 }
 
-test('HEIC -> JPEG con el CSP de produccion (unsafe-eval habilitado)', async ({
+test('iOS 18 HEIC (IMG_4295) -> JPEG con libheif-js bajo CSP de produccion', async ({
   page,
 }) => {
-  const { result, errors } = await loadConversion(page, 'index.html')
+  const { result, errors } = await loadConversion(page, {
+    pageName: 'index.html',
+    file: 'IMG_4295.HEIC',
+  })
+
+  expect(errors.filter((e) => CSP_PATTERN.test(e))).toEqual([])
+  expect(result.ok).toBe(true)
+  expect(result.type).toBe('image/jpeg')
+  expect(result.size).toBeGreaterThan(1000)
+  expect(result.width).toBeGreaterThan(0)
+  expect(result.height).toBeGreaterThan(0)
+})
+
+test('HEIC legacy (sample) -> JPEG con libheif-js bajo CSP de produccion', async ({
+  page,
+}) => {
+  const { result, errors } = await loadConversion(page, {
+    pageName: 'index.html',
+    file: 'sample.heic',
+  })
 
   expect(errors.filter((e) => CSP_PATTERN.test(e))).toEqual([])
   expect(result.ok).toBe(true)
@@ -30,23 +54,15 @@ test('HEIC -> JPEG con el CSP de produccion (unsafe-eval habilitado)', async ({
   expect(result.size).toBeGreaterThan(1000)
 })
 
-test('control negativo: CSP estricto (sin unsafe-eval) debe fallar con EvalError', async ({
+test('control: el decodificador viejo (heic2any) sigue fallando con el iOS 18 HEIC', async ({
   page,
 }) => {
-  const errors = []
-  page.on('pageerror', (err) => errors.push(String(err)))
-  page.on('weberror', (err) => errors.push(String(err.error)))
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') errors.push(msg.text())
+  const { result, errors } = await loadConversion(page, {
+    pageName: 'index-old.html',
+    file: 'IMG_4295.HEIC',
   })
 
-  await page.goto(`${BASE}/index-strict.html`)
-
-  const deadline = Date.now() + 30000
-  while (Date.now() < deadline && !errors.some((e) => CSP_PATTERN.test(e))) {
-    await page.waitForTimeout(250)
-  }
-
-  const evidence = errors.find((e) => CSP_PATTERN.test(e))
-  expect(evidence).toMatch(/unsafe-eval|EvalError|Content Security Policy/)
+  expect(result.ok).toBe(false)
+  const evidence = [result.error, ...errors].join('\n')
+  expect(evidence).toMatch(/ERR_LIBHEIF|format not supported|Could not parse HEIF/)
 })

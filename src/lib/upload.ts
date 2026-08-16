@@ -14,18 +14,82 @@ function isHeic(file: File): boolean {
   )
 }
 
+interface HeicDecodeResult {
+  width: number
+  height: number
+  data: ArrayBuffer
+}
+
+let heicWorker: Worker | null = null
+let heicRequestId = 0
+
+function getHeicWorker(): Worker {
+  if (!heicWorker) {
+    heicWorker = new Worker(new URL('./heic-worker.ts', import.meta.url), {
+      type: 'module',
+    })
+  }
+  return heicWorker
+}
+
+function decodeHeic(buffer: ArrayBuffer): Promise<HeicDecodeResult | null> {
+  return new Promise((resolve) => {
+    const worker = getHeicWorker()
+    const id = ++heicRequestId
+
+    const onMessage = (event: MessageEvent) => {
+      const message = event.data as { id: number; error?: string } & HeicDecodeResult
+      if (!message || message.id !== id) return
+      worker.removeEventListener('message', onMessage)
+      if (message.error) {
+        console.error('HEIC conversion error:', message.error)
+        resolve(null)
+        return
+      }
+      resolve(message)
+    }
+
+    worker.addEventListener('message', onMessage)
+    worker.postMessage({ id, buffer }, [buffer])
+  })
+}
+
+function heicDataToJpeg(
+  result: HeicDecodeResult,
+  baseName: string
+): Promise<File | null> {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas')
+    canvas.width = result.width
+    canvas.height = result.height
+    const context = canvas.getContext('2d')
+    if (!context) {
+      resolve(null)
+      return
+    }
+    const imageData = new ImageData(
+      new Uint8ClampedArray(result.data),
+      result.width,
+      result.height
+    )
+    context.putImageData(imageData, 0, 0)
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        resolve(null)
+        return
+      }
+      resolve(new File([blob], `${baseName || 'photo'}.jpg`, { type: 'image/jpeg' }))
+    }, 'image/jpeg', 0.92)
+  })
+}
+
 async function heicToJpeg(file: File): Promise<File | null> {
   try {
-    const heic2any = (await import('heic2any')).default
-    const result = await heic2any({
-      blob: file,
-      toType: 'image/jpeg',
-      quality: 0.92,
-    })
-
-    const blob = Array.isArray(result) ? result[0] : result
+    const buffer = await file.arrayBuffer()
+    const result = await decodeHeic(buffer)
+    if (!result) return null
     const baseName = file.name.replace(/\.heic$/i, '').replace(/\.heif$/i, '')
-    return new File([blob], `${baseName || 'photo'}.jpg`, { type: 'image/jpeg' })
+    return heicDataToJpeg(result, baseName)
   } catch (error) {
     console.error('HEIC conversion error:', error)
     return null

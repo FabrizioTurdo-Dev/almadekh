@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:;"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:;"
     />
-    <title>HEIC conversion test</title>
+    <title>HEIC conversion test (libheif-js)</title>
   </head>
   <body>
-    <h1>HEIC conversion test</h1>
-    <script src="heic2any.js"></script>
+    <h1>HEIC conversion test (libheif-js)</h1>
+    <script src="shim.js"></script>
+    <script src="/vendor/libheif.js"></script>
     <script src="test.js"></script>
   </body>
 </html>
