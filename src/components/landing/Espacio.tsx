@@ -104,34 +104,7 @@ export function Espacio() {
           </motion.div>
         </div>
 
-        {/* Quote card with ornamental border */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 max-w-2xl mx-auto"
-        >
-          <div className="relative bg-white shadow-sm border border-almadekh-border p-8 md:p-10 rounded-3xl text-center">
-            {/* Corner ornaments */}
-            <div className="absolute top-3 left-3 text-almadekh-gold/25 text-lg font-serif select-none" aria-hidden="true">❧</div>
-            <div className="absolute top-3 right-3 text-almadekh-gold/25 text-lg font-serif select-none" aria-hidden="true" style={{ transform: 'scaleX(-1)' }}>❧</div>
-            <div className="absolute bottom-3 left-3 text-almadekh-gold/25 text-lg font-serif select-none rotate-180" aria-hidden="true" style={{ transform: 'scaleX(-1) scaleY(-1)' }}>❧</div>
-            <div className="absolute bottom-3 right-3 text-almadekh-gold/25 text-lg font-serif select-none rotate-180" aria-hidden="true" style={{ transform: 'scaleY(-1)' }}>❧</div>
 
-            <p className="italic text-almadekh-rose text-lg md:text-xl font-serif mb-4 leading-relaxed">
-              "Vero, con una dulzura única, estuvo atenta a cada detalle. Muy buen lugar y todo muy rico."
-            </p>
-            <div className="flex items-center justify-center gap-2 mb-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i} className="text-almadekh-gold text-sm">★</span>
-              ))}
-            </div>
-            <span className="text-[10px] uppercase tracking-widest text-almadekh-muted font-semibold">
-              — Opinión de Google
-            </span>
-          </div>
-        </motion.div>
       </div>
     </section>
   )

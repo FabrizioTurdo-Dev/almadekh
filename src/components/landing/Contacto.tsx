@@ -5,6 +5,7 @@ import { BaroqueOrnament } from '../decorative/BaroqueOrnament'
 import { loadSettings, getDisplayPhone, getTelPhone, getAddress } from '../../lib/settings'
 
 const icons = [MapPin, Phone, Clock]
+const isProd = window.location.hostname !== 'localhost'
 
 export function Contacto() {
   const [displayPhone, setDisplayPhone] = useState('011 6972-0415')
@@ -17,6 +18,15 @@ export function Contacto() {
       setTelPhone(getTelPhone())
       setAddress(getAddress())
     })
+  }, [])
+
+  useEffect(() => {
+    if (!isProd) return
+    if (document.querySelector('script[src*="sociablekit.com"]')) return
+    const script = document.createElement('script')
+    script.src = 'https://widgets.sociablekit.com/google-reviews/widget.js'
+    script.defer = true
+    document.body.appendChild(script)
   }, [])
 
   return (
@@ -125,6 +135,21 @@ export function Contacto() {
             className="w-full"
           />
         </motion.div>
+
+        {/* Widget de reseñas Google (SociableKIT) — solo en producción */}
+        {isProd && (
+          <div className="mt-12 mb-8">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-[10px] tracking-[3px] uppercase text-almadekh-rose font-semibold block mb-2 text-center"
+            >
+              Lo que dicen de nosotros
+            </motion.span>
+            <div className="sk-ww-google-reviews max-w-4xl mx-auto" data-embed-id="25705919" />
+          </div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
