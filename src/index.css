@@ -1,64 +1,90 @@
 @import "tailwindcss";
 
 @theme {
-  --color-almadekh-bg: #e8d5b0;
-  --color-almadekh-surface: #dcc8a0;
-  --color-almadekh-card: #f0e4d4;
-  --color-almadekh-border: rgba(0, 0, 0, 0.08);
-  --color-almadekh-teal: #5a9e94;
-  --color-almadekh-teal-light: #7ab8ac;
-  --color-almadekh-rose: #c47a8a;
-  --color-almadekh-rose-light: #d89aa8;
-  --color-almadekh-gold: #c9a84c;
-  --color-almadekh-gold-light: #d4b86e;
-  --color-almadekh-burgundy: #7a3b3b;
-  --color-almadekh-warm: #d4c090;
-  --color-almadekh-parchment: #e0d0b0;
-  --color-almadekh-text: #2d2a26;
-  --color-almadekh-muted: #5a4e42;
-  --color-almadekh-subdued: #8a7e72;
-  --color-almadekh-cream: #e8d5b0;
-  --color-almadekh-parchment-edge: #c8b080;
-  --color-almadekh-parchment-dark: #b8a070;
-  --color-almadekh-aged-paper: #d4c090;
+  /* ===== PALETA BARROCA OSCURA ===== */
+  --color-baroque-dark: #0A0704;
+  --color-baroque-dark-sec: #1a0f0c;
+  --color-baroque-gold: #B8860B;
+  --color-baroque-gold-light: #d4a832;
+  --color-baroque-copper: #704214;
+  --color-baroque-wine: #722F37;
+  --color-baroque-wine-dark: #4a1820;
+  --color-baroque-cream: #E8DCC8;
+  --color-baroque-cream-muted: #C9A876;
+  --color-baroque-black: #000000;
 
-  --color-baroque-gold: #b8962e;
-  --color-baroque-burgundy: #7a2245;
+  /* ===== MANTENER TOKENS EXISTENTES PARA COMPATIBILIDAD ===== */
+  --color-almadekh-bg: #0A0704;
+  --color-almadekh-surface: #1a0f0c;
+  --color-almadekh-card: #1a0f0c;
+  --color-almadekh-border: rgba(184, 134, 11, 0.15);
+  --color-almadekh-teal: #B8860B;
+  --color-almadekh-teal-light: #d4a832;
+  --color-almadekh-rose: #722F37;
+  --color-almadekh-rose-light: #8a3a44;
+  --color-almadekh-gold: #B8860B;
+  --color-almadekh-gold-light: #d4a832;
+  --color-almadekh-burgundy: #722F37;
+  --color-almadekh-warm: #C9A876;
+  --color-almadekh-parchment: #1a0f0c;
+  --color-almadekh-text: #E8DCC8;
+  --color-almadekh-muted: #C9A876;
+  --color-almadekh-subdued: #8a7e72;
+  --color-almadekh-cream: #E8DCC8;
+  --color-almadekh-parchment-edge: #704214;
+  --color-almadekh-parchment-dark: #704214;
+  --color-almadekh-aged-paper: #1a0f0c;
+
+  --color-baroque-burgundy: #722F37;
   --color-baroque-olive: #5e8040;
-  --color-baroque-cream: #d4c9a8;
   --color-baroque-rust: #9a5028;
+
+  /* ===== SOMBRAS BARROCAS ===== */
+  --shadow-glow-gold: 0 0 20px rgba(184, 134, 11, 0.3);
+  --shadow-glow-gold-intense: 0 0 40px rgba(184, 134, 11, 0.5);
+  --shadow-inset-gold: inset 0 0 20px rgba(184, 134, 11, 0.1);
+  --shadow-barroque-frame: 0 10px 40px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* ===== RESET ===== */
 * { -webkit-tap-highlight-color: transparent; }
 
 html { scroll-behavior: smooth; }
 
+/* ===== BODY ===== */
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--color-almadekh-bg);
-  color: var(--color-almadekh-text);
+  background-color: var(--color-baroque-dark);
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(114, 47, 55, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(184, 134, 11, 0.03) 0%, transparent 50%);
+  color: var(--color-baroque-cream);
   overscroll-behavior: none;
 }
 
+/* ===== TIPOGRAFÍA ===== */
 h1, h2, h3, .font-serif, .hero-title-accent {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cinzel', serif;
 }
 
+/* ===== SCROLLBAR OSCURA ===== */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--color-almadekh-bg); }
-::-webkit-scrollbar-thumb { background: var(--color-almadekh-subdued); border-radius: 4px; }
+::-webkit-scrollbar-track { background: var(--color-baroque-dark); }
+::-webkit-scrollbar-thumb { background: var(--color-baroque-copper); border-radius: 4px; }
 
+/* ===== SELECCIÓN BARROCA ===== */
 ::selection {
-  background: var(--color-almadekh-teal);
-  color: white;
+  background-color: var(--color-baroque-gold);
+  color: var(--color-baroque-dark);
 }
 
+/* ===== FOCUS STYLES ===== */
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--color-almadekh-teal) !important;
+  border-color: var(--color-baroque-gold) !important;
 }
 
-/* Reduced motion */
+/* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -67,7 +93,9 @@ input:focus, textarea:focus, select:focus {
   }
 }
 
-/* Shimmer effect for buttons */
+/* ===== ANIMATIONS ===== */
+
+/* Shimmer para botones */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -78,7 +106,7 @@ input:focus, textarea:focus, select:focus {
   background-image: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0.1) 50%,
     transparent 100%
   );
 }
@@ -87,17 +115,17 @@ input:focus, textarea:focus, select:focus {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* Glow pulse for badges */
+/* Glow pulse dorado */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(90, 158, 148, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(90, 158, 148, 0.6); }
+  0%, 100% { box-shadow: 0 0 8px rgba(184, 134, 11, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(184, 134, 11, 0.6); }
 }
 
 .glow-pulse {
   animation: glow-pulse 2.5s ease-in-out infinite;
 }
 
-/* Candle flicker animation for warm glow effect */
+/* Parpadeo de vela */
 @keyframes candleFlicker {
   0%, 100% { opacity: 0.85; transform: scale(1); }
   25% { opacity: 1; transform: scale(1.02); }
@@ -105,7 +133,41 @@ input:focus, textarea:focus, select:focus {
   75% { opacity: 1; transform: scale(1.01); }
 }
 
-/* Global candle glow overlay — fixed positioned lights */
+/* Parpadeo de texto vela */
+@keyframes candle-text-flicker {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(184, 134, 11, 0.3)); }
+  10% { opacity: 0.95; filter: drop-shadow(0 0 4px rgba(184, 134, 11, 0.5)); }
+  20% { opacity: 1; filter: drop-shadow(0 0 2px rgba(184, 134, 11, 0.3)); }
+  50% { opacity: 0.98; filter: drop-shadow(0 0 3px rgba(184, 134, 11, 0.4)); }
+}
+
+/* Glow suave */
+@keyframes soft-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(184, 134, 11, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(184, 134, 11, 0.4); }
+}
+
+/* Entrada barroca */
+@keyframes fade-in-baroque {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== CLASES UTILITARIAS ===== */
+
+.candle-text {
+  animation: candle-text-flicker 4s ease-in-out infinite;
+}
+
+.glow-card {
+  animation: soft-glow 3s ease-in-out infinite;
+}
+
+.fade-in-baroque {
+  animation: fade-in-baroque 0.8s ease-out;
+}
+
+/* ===== CANDLE GLOW OVERLAY ===== */
 .candle-glow::before {
   content: "";
   position: absolute;
@@ -114,8 +176,8 @@ input:focus, textarea:focus, select:focus {
   border-radius: 50%;
   background: radial-gradient(
     ellipse 60% 50% at 50% 50%,
-    rgba(201, 168, 76, 0.18) 0%,
-    rgba(201, 168, 76, 0.10) 40%,
+    rgba(184, 134, 11, 0.15) 0%,
+    rgba(184, 134, 11, 0.08) 40%,
     transparent 70%
   );
   animation: candleFlicker 6s ease-in-out infinite;
@@ -129,9 +191,19 @@ input:focus, textarea:focus, select:focus {
   border-radius: 50%;
   background: radial-gradient(
     ellipse 55% 45% at 50% 50%,
-    rgba(196, 122, 138, 0.12) 0%,
-    rgba(196, 122, 138, 0.06) 45%,
+    rgba(114, 47, 55, 0.10) 0%,
+    rgba(114, 47, 55, 0.05) 45%,
     transparent 70%
   );
   animation: candleFlicker 7s ease-in-out infinite 1s;
+}
+
+/* ===== REUTILIZABLE ADMIN STYLES ===== */
+
+.admin-card {
+  @apply bg-white shadow-sm border border-almadekh-border rounded-xl p-4;
+}
+
+.btn-burgundy-gradient {
+  @apply bg-gradient-to-b from-[#722F37] to-[#4a1820] hover:from-[#8a3a44] hover:to-[#5a1f28];
 }
