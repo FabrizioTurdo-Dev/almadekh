@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 
 export function LoginForm() {
   const { loading, login } = useAuthStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,16 +43,26 @@ export function LoginForm() {
           required
         />
         <label htmlFor="admin-password" className="text-xs text-almadekh-muted block mb-1.5">Contraseña</label>
-        <input
-          id="admin-password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Ingresá tu contraseña"
-          autoComplete="current-password"
-          className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-3 text-sm text-almadekh-text placeholder-almadekh-subdued mb-3"
-          required
-        />
+        <div className="relative mb-3">
+          <input
+            id="admin-password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Ingresá tu contraseña"
+            autoComplete="current-password"
+            className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-3 pr-11 text-sm text-almadekh-text placeholder-almadekh-subdued"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-almadekh-muted hover:text-almadekh-text"
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
         {error && (
           <p role="alert" className="text-status-pending text-xs mb-2">{error}</p>
         )}
