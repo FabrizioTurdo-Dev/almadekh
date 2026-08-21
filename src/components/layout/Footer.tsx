@@ -14,7 +14,7 @@ export function Footer() {
           </div>
           <div>
             <h4 className="text-baroque-gold tracking-widest mb-2 text-xs" style={{ fontFamily: '"Cinzel", serif' }}>HORARIO</h4>
-            <p className="text-baroque-cream-muted text-sm">Mar - Dom: 09:00 - 14:00 / 17:00 - 20:45</p>
+            <p className="text-baroque-cream-muted text-sm">Mar - Vier: 08:30 - 21:00 / Sabados 10:00 - 21:00 y mas</p>
           </div>
           <div>
             <h4 className="text-baroque-gold tracking-widest mb-2 text-xs" style={{ fontFamily: '"Cinzel", serif' }}>CONTACTO</h4>
