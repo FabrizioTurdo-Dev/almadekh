@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { loadSettings, getHours } from '../../lib/settings'
 
+const DEV_WHATSAPP_URL =
+  'https://wa.me/5491154922800?text=' +
+  encodeURIComponent('Hola, vi la página de Vero, me gustó. ¡Quiero una!')
+
 export function Footer() {
   const [hours, setHours] = useState('Mar - Vier: 08:30 - 21:00 / Sábados 10:00 - 21:00 y más')
 
@@ -34,6 +38,17 @@ export function Footer() {
         <div className="border-t border-baroque-gold/15 pt-8 text-center">
           <p className="text-baroque-cream-muted/60 text-xs tracking-widest">
             © 2024 ALMA DEKH — Una Experiencia Gastronómica
+          </p>
+          <p className="text-baroque-cream-muted/40 text-[11px] tracking-wide mt-2">
+            Sitio hecho por{' '}
+            <a
+              href={DEV_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-baroque-gold hover:underline"
+            >
+              Fabrizio Turdo
+            </a>
           </p>
         </div>
       </div>
