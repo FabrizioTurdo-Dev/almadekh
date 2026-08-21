@@ -10,7 +10,7 @@ export function Hero() {
   const navigate = useNavigate()
 
   return (
-    <section id="hero" className="relative min-h-svh flex items-center justify-center bg-cover bg-center bg-scroll md:bg-fixed -mt-14 md:-mt-16" style={{ backgroundImage: "url('/images/hero.jpg')" }}>
+    <section id="hero" className="relative min-h-svh flex items-center justify-center bg-cover bg-center bg-scroll md:bg-fixed -mt-14 md:-mt-16" style={{ backgroundImage: "url('/images/heroNew.jpeg')" }}>
       {/* Overlay Tenebrista — estilo Caravaggio */}
       <div className="absolute inset-0" style={{
         background: [
