@@ -45,7 +45,7 @@ export default function App() {
       <BrowserRouter>
         <VintageBackground>
           <Suspense fallback={
-            <div className="min-h-screen bg-almadekh-bg flex items-center justify-center">
+            <div className="min-h-svh bg-almadekh-bg flex items-center justify-center">
               <div className="w-8 h-8 border-2 border-baroque-gold/30 border-t-baroque-gold rounded-full animate-spin" />
             </div>
           }>

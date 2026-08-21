@@ -8,32 +8,44 @@
   --color-baroque-gold-light: #d4a832;
   --color-baroque-copper: #704214;
   --color-baroque-wine: #722F37;
+  --color-baroque-wine-light: #8a3a44;
   --color-baroque-wine-dark: #4a1820;
+  --color-baroque-wine-deep: #5a1f28;
   --color-baroque-cream: #E8DCC8;
   --color-baroque-cream-muted: #C9A876;
   --color-baroque-black: #000000;
 
-  /* ===== MANTENER TOKENS EXISTENTES PARA COMPATIBILIDAD ===== */
-  --color-almadekh-bg: #0A0704;
-  --color-almadekh-surface: #1a0f0c;
-  --color-almadekh-card: #1a0f0c;
+  /* ===== CAPA SEMANTICA =====
+     Nombres por funcion, no por color, para el panel admin. Referencian la
+     paleta de arriba en vez de repetir los hex: antes eran 20 valores
+     duplicados y cambiar un color obligaba a tocar los dos bloques. */
+  --color-almadekh-bg: var(--color-baroque-dark);
+  --color-almadekh-surface: var(--color-baroque-dark-sec);
+  --color-almadekh-card: var(--color-baroque-dark-sec);
   --color-almadekh-border: rgba(184, 134, 11, 0.15);
-  --color-almadekh-teal: #B8860B;
-  --color-almadekh-teal-light: #d4a832;
-  --color-almadekh-rose: #722F37;
-  --color-almadekh-rose-light: #8a3a44;
-  --color-almadekh-gold: #B8860B;
-  --color-almadekh-gold-light: #d4a832;
-  --color-almadekh-burgundy: #722F37;
-  --color-almadekh-warm: #C9A876;
-  --color-almadekh-parchment: #1a0f0c;
-  --color-almadekh-text: #E8DCC8;
-  --color-almadekh-muted: #C9A876;
+  --color-almadekh-teal: var(--color-baroque-gold);
+  --color-almadekh-teal-light: var(--color-baroque-gold-light);
+  --color-almadekh-rose: var(--color-baroque-wine);
+  --color-almadekh-rose-light: var(--color-baroque-wine-light);
+  --color-almadekh-gold: var(--color-baroque-gold);
+  --color-almadekh-gold-light: var(--color-baroque-gold-light);
+  --color-almadekh-burgundy: var(--color-baroque-wine);
+  --color-almadekh-warm: var(--color-baroque-cream-muted);
+  --color-almadekh-parchment: var(--color-baroque-dark-sec);
+  --color-almadekh-text: var(--color-baroque-cream);
+  --color-almadekh-muted: var(--color-baroque-cream-muted);
   --color-almadekh-subdued: #8a7e72;
-  --color-almadekh-cream: #E8DCC8;
-  --color-almadekh-parchment-edge: #704214;
-  --color-almadekh-parchment-dark: #704214;
-  --color-almadekh-aged-paper: #1a0f0c;
+  --color-almadekh-cream: var(--color-baroque-cream);
+  --color-almadekh-parchment-edge: var(--color-baroque-copper);
+  --color-almadekh-parchment-dark: var(--color-baroque-copper);
+  --color-almadekh-aged-paper: var(--color-baroque-dark-sec);
+
+  /* ===== ESTADOS DE PEDIDO (legibles sobre #1a0f0c, todos >5:1) ===== */
+  --color-status-pending: #d98c96;
+  --color-status-confirmed: #d4a832;
+  --color-status-prep: #7fb2d9;
+  --color-status-ready: #8fbf6a;
+  --color-status-cancelled: #9a8f84;
 
   --color-baroque-burgundy: #722F37;
   --color-baroque-olive: #5e8040;
@@ -198,12 +210,39 @@ input:focus, textarea:focus, select:focus {
   animation: candleFlicker 7s ease-in-out infinite 1s;
 }
 
+/* ===== AREA SEGURA DEL DISPOSITIVO (notch / barra de home) ===== */
+/* Requiere viewport-fit=cover en el meta viewport, si no env() devuelve 0. */
+
+/* Padding interno de las barras fijas inferiores */
+.pb-safe {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Espacio al final del contenido para que el nav inferior fijo no lo tape.
+   El nav es md:hidden, asi que en desktop no hace falta. */
+.pb-mobile-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 768px) {
+  .pb-mobile-nav { padding-bottom: 0; }
+}
+
+/* Alto del Hero en mobile: 100svh menos el nav inferior fijo (~3.9rem),
+   para que termine justo donde empieza el nav en vez de quedar tapado.
+   El nav es md:hidden, asi que en desktop se usa el 100svh completo. */
+#hero {
+  min-height: calc(100svh - 3.9rem - env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 768px) {
+  #hero { min-height: 100svh; }
+}
+
 /* ===== REUTILIZABLE ADMIN STYLES ===== */
 
 .admin-card {
-  @apply bg-white shadow-sm border border-almadekh-border rounded-xl p-4;
+  @apply bg-almadekh-surface border border-almadekh-border rounded-xl p-4;
 }
 
 .btn-burgundy-gradient {
-  @apply bg-gradient-to-b from-[#722F37] to-[#4a1820] hover:from-[#8a3a44] hover:to-[#5a1f28];
+  @apply bg-gradient-to-b from-baroque-wine to-baroque-wine-dark hover:from-baroque-wine-light hover:to-baroque-wine-deep;
 }

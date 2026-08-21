@@ -5,25 +5,25 @@ import { Espacio } from '../components/landing/Espacio'
 import { Experiencia } from '../components/landing/Experiencia'
 import { Eventos } from '../components/landing/Eventos'
 import { Contacto } from '../components/landing/Contacto'
+import { Footer } from '../components/layout/Footer'
 import { OrnamentalDivider } from '../components/decorative/OrnamentalDivider'
-import { BaroqueOrnament } from '../components/decorative/BaroqueOrnament'
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen pt-14 md:pt-16">
+    <div className="min-h-svh pt-14 md:pt-16 pb-mobile-nav bg-baroque-dark">
       <TopNav />
       <Hero />
-      <OrnamentalDivider color="var(--color-baroque-gold)" variant="flourish" />
       <Poema />
+      <OrnamentalDivider variant="flourish" />
       <Espacio />
-      <OrnamentalDivider color="var(--color-baroque-burgundy)" variant="floral" />
+      <OrnamentalDivider variant="flourish" />
       <Experiencia />
-      <div className="flex justify-center py-4">
-        <BaroqueOrnament variant="scroll" color="gold" size={110} opacity={0.4} rotation={90} />
-      </div>
+      <OrnamentalDivider variant="flourish" />
       <Eventos />
-      <OrnamentalDivider color="var(--color-baroque-gold)" variant="flourish" />
+      <OrnamentalDivider variant="flourish" />
       <Contacto />
+      <OrnamentalDivider variant="flourish" />
+      <Footer />
       <BottomNav />
     </div>
   )

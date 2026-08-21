@@ -9,10 +9,14 @@ export function Espacio() {
     offset: ['start end', 'end start'],
   })
 
-  const imageY = useTransform(scrollYProgress, [0, 1], [40, -40])
+  // Recorrido del parallax en px. El marco recorta y la imagen lleva 2x este
+  // valor de alto extra (`h-[calc(...+5rem)]` con `-mt-10`), asi que en ningun
+  // punto del scroll se ve el fondo dentro del marco.
+  const PARALLAX_TRAVEL = 40
+  const imageY = useTransform(scrollYProgress, [0, 1], [PARALLAX_TRAVEL, -PARALLAX_TRAVEL])
 
   return (
-    <section id="espacio" ref={sectionRef} className="relative py-28 bg-almadekh-bg/80">
+    <section id="espacio" ref={sectionRef} className="relative min-h-svh flex items-center justify-center bg-baroque-dark">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
@@ -20,7 +24,7 @@ export function Espacio() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-[10px] tracking-[3px] uppercase text-almadekh-teal font-semibold block mb-2"
+              className="text-[10px] tracking-[3px] uppercase text-baroque-gold font-semibold block mb-2"
             >
               Nuestro Entorno
             </motion.span>
@@ -29,7 +33,8 @@ export function Espacio() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-3xl sm:text-5xl font-serif font-bold text-almadekh-text mb-6"
+              className="text-3xl sm:text-5xl font-bold text-baroque-cream mb-6"
+              style={{ fontFamily: '"Cinzel", serif' }}
             >
               Galerías al aire libre y calidez natural
             </motion.h2>
@@ -38,7 +43,7 @@ export function Espacio() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-sm sm:text-base text-almadekh-muted font-light leading-relaxed mb-6"
+              className="text-sm sm:text-base text-baroque-cream-muted font-light leading-relaxed mb-6"
             >
               Ubicados en Ingeniero Maschwitz, te ofrecemos un espacio pensado para
               relajarte y disfrutar. Contamos con asientos al aire libre, un ambiente
@@ -63,16 +68,16 @@ export function Espacio() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.4 + i * 0.1 }}
-                  className="flex items-center gap-3 text-almadekh-muted"
+                  className="flex items-center gap-3 text-baroque-cream-muted"
                 >
-                  <span className="w-2 h-2 rounded-full bg-almadekh-teal shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-baroque-gold shrink-0" />
                   {item}
                 </motion.li>
               ))}
             </motion.ul>
           </div>
 
-          {/* Image with parallax */}
+          {/* Imagen con parallax */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -80,11 +85,15 @@ export function Espacio() {
             transition={{ delay: 0.4, duration: 0.7 }}
             className="relative"
           >
-            <div className="overflow-hidden rounded-3xl shadow-xl">
+            {/* El marco define el alto visible; la imagen es PARALLAX_TRAVEL mas
+                alta a cada lado para que el desplazamiento nunca descubra el
+                fondo. Con la imagen del mismo alto que el marco quedaba una
+                franja vacia de hasta 42px abajo. */}
+            <div className="overflow-hidden rounded-3xl shadow-xl border-2 border-baroque-gold/30 h-80 md:h-[28rem]">
               <motion.img
                 src="/images/espacio.jpg"
                 alt="Galería exterior de Alma Dekh"
-                className="w-full h-80 md:h-[28rem] object-cover"
+                className="w-full h-[calc(20rem+5rem)] md:h-[calc(28rem+5rem)] -mt-10 object-cover"
                 loading="lazy"
                 decoding="async"
                 width={800}
@@ -92,19 +101,17 @@ export function Espacio() {
                 style={{ y: imageY }}
               />
             </div>
-        {/* Decorative corner frame with baroque leaf */}
-        <div className="absolute -top-3 -right-3 w-16 h-16 border-t-2 border-r-2 border-baroque-gold/50 rounded-tr-2xl pointer-events-none" aria-hidden="true" />
-        <div className="absolute -bottom-3 -left-3 w-16 h-16 border-b-2 border-l-2 border-baroque-gold/50 rounded-bl-2xl pointer-events-none" />
-        <div className="absolute -top-4 -left-4 z-10 hidden md:block" aria-hidden="true">
-          <BaroqueOrnament variant="corner" color="gold" size={60} opacity={0.35} />
-        </div>
-        <div className="absolute -bottom-4 -right-4 z-10 hidden md:block" aria-hidden="true">
-          <BaroqueOrnament variant="corner" color="gold" size={60} rotation={180} opacity={0.35} />
-        </div>
+            {/* Ornamento superior-izquierdo: se escala en mobile en vez de
+                ocultarse. El inferior-derecho se oculta directamente en
+                mobile por decisión de diseño y solo aparece desde `md:`. */}
+            <div className="absolute -top-4 -left-4 md:-top-6 md:-left-6 z-10 origin-top-left scale-[0.55] md:scale-100" aria-hidden="true">
+              <BaroqueOrnament variant="corner" size={100} opacity={0.5} />
+            </div>
+            <div className="absolute hidden md:block md:-bottom-6 md:-right-6 z-10 origin-bottom-right md:scale-100" aria-hidden="true">
+              <BaroqueOrnament variant="corner" size={100} rotation={180} opacity={0.5} />
+            </div>
           </motion.div>
         </div>
-
-
       </div>
     </section>
   )

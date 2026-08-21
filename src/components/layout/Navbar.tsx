@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Home, ClipboardList, User, Menu, X } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -25,25 +25,19 @@ const navbarRoot = typeof document !== 'undefined'
 export function BottomNav() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [isOverHero, setIsOverHero] = useState(true)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsOverHero(window.scrollY < 100)
+  const handleNavClick = (path: string) => {
+    if (path === '/' && location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      navigate(path)
     }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }
 
   if (!navbarRoot) return null
 
   return createPortal(
-    <nav className={`fixed bottom-0 left-0 right-0 z-[9999] backdrop-blur-xl border-t pb-5 pt-2 md:hidden transition-all duration-500 ${
-      isOverHero
-        ? 'bg-black/40 border-white/10'
-        : 'bg-almadekh-bg/95 border-almadekh-border'
-    }`}>
+    <nav className="fixed bottom-0 left-0 right-0 z-[9999] backdrop-blur-xl border-t pb-safe pt-2 md:hidden transition-all duration-500 bg-baroque-dark/95 border-baroque-gold/30">
       <div className="flex justify-around items-center max-w-lg mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path
@@ -51,11 +45,9 @@ export function BottomNav() {
           return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavClick(item.path)}
               className={`flex flex-col items-center gap-0.5 text-[10px] font-medium transition-all duration-500 px-4 py-1 ${
-                isOverHero
-                  ? isActive ? 'text-white' : 'text-white/70'
-                  : isActive ? 'text-almadekh-teal' : 'text-almadekh-subdued'
+                isActive ? 'text-baroque-gold' : 'text-baroque-cream-muted/60'
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -73,22 +65,16 @@ export function TopNav() {
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenu, setMobileMenu] = useState(false)
-  const [isOverHero, setIsOverHero] = useState(true)
 
   const isLanding = location.pathname === '/'
 
-  useEffect(() => {
-    if (!isLanding) {
-      setIsOverHero(false)
-      return
+  const handleNavClick = (path: string) => {
+    if (path === '/' && location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      navigate(path)
     }
-    const handleScroll = () => {
-      setIsOverHero(window.scrollY < 100)
-    }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isLanding])
+  }
 
   const handleMobileNav = (sectionId: string) => {
     setMobileMenu(false)
@@ -102,27 +88,18 @@ export function TopNav() {
     }
   }
 
-  const handlePageNav = (path: string) => {
-    setMobileMenu(false)
-    navigate(path)
-  }
-
   if (!navbarRoot) return null
 
   return createPortal(
     <>
-      <nav className={`hidden md:flex fixed top-0 left-0 right-0 z-[9999] backdrop-blur-xl h-14 items-center justify-between px-6 transition-all duration-500 ${
-        isOverHero
-          ? 'bg-black/30 border-b border-white/10'
-          : 'bg-almadekh-bg/95 border-b border-almadekh-border'
-      }`}>
+      <nav className="hidden md:flex fixed top-0 left-0 right-0 z-[9999] h-14 items-center justify-between px-6 transition-all duration-500 bg-gradient-to-r from-baroque-dark via-baroque-dark-sec to-baroque-dark backdrop-blur-md border-b-2 border-baroque-gold shadow-[0_8px_25px_rgba(184,134,11,0.15)]">
         <button onClick={() => navigate('/')} className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg overflow-hidden bg-white">
+          <div className="w-8 h-8 rounded-lg overflow-hidden border border-baroque-gold/30">
             <img src="/images/logo.jpg" alt="Alma Dekh" className="w-full h-full object-contain" />
           </div>
-          <span className={`font-serif font-bold text-lg tracking-wide transition-colors duration-500 ${
-            isOverHero ? 'text-white' : 'text-almadekh-teal'
-          }`}>Alma Dekh</span>
+          <span className="font-bold text-lg tracking-[0.1em] text-baroque-cream" style={{ fontFamily: '"Cinzel", serif' }}>
+            Alma Dekh
+          </span>
         </button>
         <div className="flex items-center gap-1">
           {navItems.map((item) => {
@@ -131,15 +108,11 @@ export function TopNav() {
               return (
                 <button
                   key={item.path}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => handleNavClick(item.path)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-500 ${
-                    isOverHero
-                      ? isActive
-                        ? 'bg-white/20 text-white'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
-                      : isActive
-                        ? 'bg-almadekh-teal/10 text-almadekh-teal'
-                        : 'text-almadekh-subdued hover:text-almadekh-text hover:bg-almadekh-surface'
+                    isActive
+                      ? 'bg-baroque-gold/15 text-baroque-gold shadow-[0_0_15px_rgba(184,134,11,0.2)]'
+                      : 'text-baroque-cream-muted/70 hover:text-baroque-cream hover:bg-baroque-gold/8'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -154,13 +127,9 @@ export function TopNav() {
         <button
           onClick={() => setMobileMenu(true)}
           aria-label="Abrir menú"
-          className={`fixed top-3 right-3 z-[9999] md:hidden backdrop-blur-xl p-2 rounded-xl transition-all duration-500 ${
-            isOverHero
-              ? 'bg-black/30 border border-white/10'
-              : 'bg-almadekh-bg/80 border border-almadekh-border'
-          }`}
+          className="fixed top-3 right-3 z-[9999] md:hidden backdrop-blur-xl p-2.5 rounded-xl transition-all duration-500 bg-baroque-dark/80 border border-baroque-gold/20 min-w-11 min-h-11 flex items-center justify-center"
         >
-          <Menu className={`w-5 h-5 transition-colors duration-500 ${isOverHero ? 'text-white' : 'text-almadekh-text'}`} />
+          <Menu className="w-5 h-5 text-baroque-cream" />
         </button>
       )}
 
@@ -174,7 +143,7 @@ export function TopNav() {
             className="fixed inset-0 z-[9999] md:hidden"
           >
             <div
-              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setMobileMenu(false)}
             />
             <motion.div
@@ -182,20 +151,20 @@ export function TopNav() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="absolute right-0 top-0 bottom-0 w-72 bg-almadekh-bg border-l border-almadekh-border p-6"
+              className="absolute right-0 top-0 bottom-0 w-72 bg-baroque-dark border-l-2 border-baroque-gold/30 p-6"
             >
               <div className="flex items-center justify-between mb-8">
-                <span className="text-sm font-bold text-almadekh-teal font-serif">Alma Dekh</span>
+                <span className="text-sm font-bold text-baroque-gold tracking-[0.1em]" style={{ fontFamily: '"Cinzel", serif' }}>Alma Dekh</span>
                 <button
                   onClick={() => setMobileMenu(false)}
-                  className="text-almadekh-subdued hover:text-almadekh-text transition-colors p-1"
+                  className="text-baroque-cream-muted/60 hover:text-baroque-cream transition-colors p-1"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="mb-6">
-                <p className="text-[10px] tracking-[2px] uppercase text-almadekh-muted font-semibold mb-3">
+                <p className="text-[10px] tracking-[2px] uppercase text-baroque-gold font-semibold mb-3">
                   Secciones
                 </p>
                 <div className="space-y-1">
@@ -203,32 +172,11 @@ export function TopNav() {
                     <button
                       key={link.id}
                       onClick={() => handleMobileNav(link.id)}
-                      className="block w-full text-left px-3 py-2.5 rounded-xl text-sm text-almadekh-text hover:bg-almadekh-surface hover:text-almadekh-teal transition-all font-medium"
+                      className="block w-full text-left px-3 py-2.5 rounded-xl text-sm text-baroque-cream hover:bg-baroque-gold/10 hover:text-baroque-gold transition-all font-medium"
                     >
                       {link.label}
                     </button>
                   ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-[10px] tracking-[2px] uppercase text-almadekh-muted font-semibold mb-3">
-                  Páginas
-                </p>
-                <div className="space-y-1">
-                  {navItems.map((item) => {
-                      const Icon = item.icon
-                      return (
-                        <button
-                          key={item.path}
-                          onClick={() => handlePageNav(item.path)}
-                          className="flex w-full items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-almadekh-text hover:bg-almadekh-surface hover:text-almadekh-teal transition-all font-medium"
-                        >
-                          <Icon className="w-4 h-4" />
-                          {item.label}
-                        </button>
-                      )
-                    })}
                 </div>
               </div>
             </motion.div>

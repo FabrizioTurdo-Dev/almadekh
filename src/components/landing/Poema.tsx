@@ -1,20 +1,14 @@
 import { motion } from 'framer-motion'
-import { BaroqueOrnament } from '../decorative/BaroqueOrnament'
 
 export function Poema() {
   return (
-    <section id="poema" className="relative py-20 md:py-28 bg-baroque-cream/40 overflow-hidden">
-      {/* Decorative baroque leaf in background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true">
-        <BaroqueOrnament variant="leaf" color="gold" size={300} opacity={0.06} />
-      </div>
-
+    <section id="poema" className="relative min-h-svh flex items-center justify-center bg-baroque-dark overflow-hidden">
       <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-[10px] tracking-[3px] uppercase text-baroque-burgundy font-semibold block mb-3"
+          className="text-[10px] tracking-[3px] uppercase text-baroque-gold font-semibold block mb-3"
         >
           Poema
         </motion.span>
@@ -24,28 +18,31 @@ export function Poema() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-baroque-burgundy mb-10"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold text-baroque-cream mb-10"
+          style={{ fontFamily: '"Cinzel", serif' }}
         >
           La Mirada del Alma
         </motion.h2>
 
+        {/* Esquina decorativa superior izquierda del bloque del poema.
+            En movil va pegada al borde (sin offset negativo) y mas chica:
+            con -left-20 quedaba media imagen fuera de pantalla. */}
+        <img
+          src="/images/ornaments/esquinaPoema.webp"
+          alt=""
+          className="absolute top-16 left-0 w-28 h-28 sm:w-56 sm:h-64 object-contain pointer-events-none opacity-80"
+          loading="lazy"
+          decoding="async"
+        />
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="relative"
+          className="relative rounded-2xl px-6 sm:px-12 py-12 overflow-hidden"
         >
-          {/* Opening quote */}
-          <span
-            className="absolute -top-6 -left-2 text-6xl font-serif leading-none select-none pointer-events-none text-baroque-gold/20"
-            aria-hidden="true"
-          >
-            &ldquo;
-          </span>
-
-          <div className="space-y-5 text-base sm:text-lg md:text-xl text-almadekh-text/85 leading-relaxed md:leading-loose font-light" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-            <p>
+          <div className="space-y-5 text-base sm:text-lg md:text-xl text-baroque-cream-muted/90 leading-relaxed md:leading-loose font-light relative z-10" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+            <p className="first-letter:text-5xl first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:leading-none first-letter:text-baroque-gold">
               Una tenue luz que crece y enciende senderos muertos, relámpagos de sueños
               gestándose, chispas de amor que invaden almas en el destierro.
             </p>
@@ -72,14 +69,6 @@ export function Poema() {
               y vida recuperadas.
             </p>
           </div>
-
-          {/* Closing quote */}
-          <span
-            className="absolute -bottom-8 -right-2 text-6xl font-serif leading-none select-none pointer-events-none text-baroque-gold/20"
-            aria-hidden="true"
-          >
-            &rdquo;
-          </span>
         </motion.div>
 
         <motion.p
@@ -87,7 +76,7 @@ export function Poema() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
-          className="mt-12 text-xs tracking-[2px] uppercase text-baroque-rust font-semibold"
+          className="mt-12 text-xs tracking-[2px] uppercase text-baroque-cream-muted font-semibold"
         >
           — Ana Clara Amabile
         </motion.p>

@@ -4,8 +4,12 @@ import { Phone, MapPin, Clock } from 'lucide-react'
 import { BaroqueOrnament } from '../decorative/BaroqueOrnament'
 import { loadSettings, getDisplayPhone, getTelPhone, getAddress } from '../../lib/settings'
 
-const icons = [MapPin, Phone, Clock]
-const isProd = window.location.hostname !== 'localhost'
+// `import.meta.env.PROD` lo resuelve Vite en tiempo de compilacion, asi que en
+// desarrollo el bloque entero se elimina del bundle. Antes esto era
+// `window.location.hostname !== 'localhost'`, que daba `true` al entrar por
+// 127.0.0.1 o por la IP de la LAN: el widget de terceros se cargaba en
+// desarrollo y devolvia 404.
+const isProd = import.meta.env.PROD
 
 export function Contacto() {
   const [displayPhone, setDisplayPhone] = useState('011 6972-0415')
@@ -30,25 +34,25 @@ export function Contacto() {
   }, [])
 
   return (
-    <section id="contacto" className="relative py-16 md:py-24 px-6 bg-almadekh-surface/80 overflow-hidden">
-      {/* Warm glow accent */}
+    <section id="contacto" className="relative min-h-svh flex items-center justify-center px-6 bg-baroque-dark overflow-hidden">
+      {/* Glow cálido dorado */}
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(201,168,76,0.08) 0%, transparent 60%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(184,134,11,0.06) 0%, transparent 60%)',
         }}
       />
-      {/* Decorative baroque ornament */}
-      <div className="absolute top-8 right-10 hidden md:block" aria-hidden="true">
-        <BaroqueOrnament variant="leaf" color="burgundy" size={50} rotation={12} opacity={0.32} />
+      {/* Ornamento barroco */}
+      <div className="absolute top-4 right-4 md:top-8 md:right-10 scale-[0.55] md:scale-100 origin-top-right" aria-hidden="true">
+        <BaroqueOrnament variant="leaf" size={50} rotation={12} opacity={0.25} />
       </div>
       <div className="relative max-w-6xl mx-auto">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-[10px] tracking-[3px] uppercase text-almadekh-teal font-semibold block mb-2"
+          className="text-[10px] tracking-[3px] uppercase text-baroque-gold font-semibold block mb-2"
         >
           Encontranos
         </motion.span>
@@ -57,7 +61,8 @@ export function Contacto() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-2xl md:text-4xl leading-tight text-almadekh-text mb-6"
+          className="text-2xl md:text-4xl leading-tight text-baroque-cream mb-6"
+          style={{ fontFamily: '"Cinzel", serif' }}
         >
           Visítanos en Ingeniero Maschwitz
         </motion.h2>
@@ -66,17 +71,19 @@ export function Contacto() {
           {[
             {
               title: 'Dirección',
+              Icon: MapPin,
               content: (
-                <p className="text-xs text-almadekh-muted leading-relaxed">
+                <p className="text-xs text-baroque-cream-muted leading-relaxed">
                   {address}
                 </p>
               ),
             },
             {
               title: 'Teléfono',
+              Icon: Phone,
               content: (
-                <p className="text-xs text-almadekh-muted leading-relaxed">
-                  <a href={`tel:${telPhone}`} className="text-almadekh-teal hover:underline font-medium">
+                <p className="text-xs text-baroque-cream-muted leading-relaxed">
+                  <a href={`tel:${telPhone}`} className="inline-flex items-center min-h-11 text-baroque-gold hover:underline font-medium">
                     {displayPhone}
                   </a>
                 </p>
@@ -84,10 +91,11 @@ export function Contacto() {
             },
             {
               title: 'Horarios',
-              content: <p className="text-xs text-almadekh-muted leading-relaxed">Abierto todos los días.</p>,
+              Icon: Clock,
+              content: <p className="text-xs text-baroque-cream-muted leading-relaxed">Abierto todos los días.</p>,
             },
           ].map((item, i) => {
-            const Icon = icons[i]
+            const { Icon } = item
             return (
               <motion.div
                 key={item.title}
@@ -96,17 +104,17 @@ export function Contacto() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 + i * 0.1 }}
                 whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                className="bg-white shadow-sm border border-almadekh-border rounded-2xl p-5 group cursor-default"
+                className="bg-baroque-dark-sec border-2 border-baroque-gold/15 rounded-2xl p-5 group cursor-default shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:border-baroque-gold/30 hover:shadow-[0_0_25px_rgba(184,134,11,0.1)] transition-all"
               >
                 <div className="flex items-start gap-3">
                   <motion.div
                     whileHover={{ rotate: 15, scale: 1.15 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <Icon className="w-5 h-5 text-almadekh-teal mt-0.5 shrink-0 group-hover:text-almadekh-teal-light transition-colors" />
+                    <Icon className="w-5 h-5 text-baroque-gold mt-0.5 shrink-0 group-hover:text-baroque-gold-light transition-colors" />
                   </motion.div>
                   <div>
-                    <h3 className="text-sm font-semibold text-almadekh-text mb-1">{item.title}</h3>
+                    <h3 className="text-sm font-semibold text-baroque-cream mb-1">{item.title}</h3>
                     {item.content}
                   </div>
                 </div>
@@ -121,19 +129,21 @@ export function Contacto() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mb-8 rounded-2xl overflow-hidden shadow-sm border border-almadekh-border"
+          className="mb-8 rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-2 border-baroque-gold/15"
         >
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3293.1229867222023!2d-58.749368100000005!3d-34.3727921!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc9f584bda71b5%3A0x786d99b27cd38e64!2sAlma%20Dekh!5e0!3m2!1ses-419!2sar!4v1785765288329!5m2!1ses-419!2sar"
-            width="100%"
-            height="450"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-            title="Ubicación de Alma Dekh"
-            className="w-full"
-          />
+          {/* Relacion de aspecto en vez de 450px fijos: en un telefono de 375px
+              el mapa quedaba mas alto que ancho y se comia media pantalla. */}
+          <div className="aspect-[4/3] sm:aspect-[16/9]">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3293.1229867222023!2d-58.749368100000005!3d-34.3727921!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc9f584bda71b5%3A0x786d99b27cd38e64!2sAlma%20Dekh!5e0!3m2!1ses-419!2sar!4v1785765288329!5m2!1ses-419!2sar"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+              title="Ubicación de Alma Dekh"
+              className="w-full h-full"
+            />
+          </div>
         </motion.div>
 
         {/* Widget de reseñas Google (SociableKIT) — solo en producción */}
@@ -143,7 +153,7 @@ export function Contacto() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-[10px] tracking-[3px] uppercase text-almadekh-rose font-semibold block mb-2 text-center"
+              className="text-[10px] tracking-[3px] uppercase text-baroque-wine font-semibold block mb-2 text-center"
             >
               Lo que dicen de nosotros
             </motion.span>
@@ -162,13 +172,13 @@ export function Contacto() {
             href="https://maps.google.com/?q=La+Pista+250+Ingeniero+Maschwitz"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-almadekh-teal hover:bg-almadekh-teal-light text-white font-bold py-4 rounded-xl transition-all text-center text-sm btn-shimmer"
+            className="flex-1 bg-gradient-to-b from-baroque-wine to-baroque-wine-dark hover:from-baroque-wine-light hover:to-baroque-wine-deep text-baroque-cream font-bold py-4 rounded-xl transition-all text-center text-sm btn-shimmer border border-baroque-gold/30"
           >
             Cómo Llegar (Google Maps)
           </a>
           <a
             href={`tel:${telPhone}`}
-            className="flex-1 bg-white hover:bg-almadekh-surface text-almadekh-text font-semibold py-4 rounded-xl transition-all border border-almadekh-border text-center text-sm hover:shadow-md"
+            className="flex-1 bg-baroque-dark-sec hover:bg-baroque-dark text-baroque-cream font-semibold py-4 rounded-xl transition-all border-2 border-baroque-gold/20 text-center text-sm hover:border-baroque-gold/40 hover:shadow-[0_0_20px_rgba(184,134,11,0.1)]"
           >
             Llamar para Reservar
           </a>

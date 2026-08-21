@@ -45,13 +45,13 @@ function getEmoji(id: string): string {
 
 export function DishCard({ item, qty, isSpecial, onAdd, onRemove }: Props) {
   return (
-    <div className={`relative flex gap-3 p-3.5 bg-[#1a0f0c] rounded-2xl items-center transition-all duration-300 ${
+    <div className={`relative flex gap-3 p-3.5 bg-baroque-dark-sec rounded-2xl items-center transition-all duration-300 ${
       isSpecial
-        ? 'border-2 border-[#B8860B]/40 hover:border-[#B8860B] hover:shadow-[0_0_30px_rgba(184,134,11,0.15)]'
-        : 'border border-[#B8860B]/10 hover:border-[#B8860B]/30 hover:shadow-[0_0_20px_rgba(184,134,11,0.1)]'
+        ? 'border-2 border-baroque-gold/40 hover:border-baroque-gold hover:shadow-[0_0_30px_rgba(184,134,11,0.15)]'
+        : 'border border-baroque-gold/10 hover:border-baroque-gold/30 hover:shadow-[0_0_20px_rgba(184,134,11,0.1)]'
     } shadow-[0_4px_15px_rgba(0,0,0,0.3)]`}>
       {isSpecial && (
-        <span className="absolute -top-2 -right-2 bg-[#B8860B] text-[#0A0704] text-[9px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(184,134,11,0.4)]">
+        <span className="absolute -top-2 -right-2 bg-baroque-gold text-baroque-dark text-[9px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(184,134,11,0.4)]">
           ⭐ Especial
         </span>
       )}
@@ -70,29 +70,29 @@ export function DishCard({ item, qty, isSpecial, onAdd, onRemove }: Props) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-[#E8DCC8] truncate">{item.name}</h4>
+        <h4 className="text-sm font-semibold text-baroque-cream line-clamp-2">{item.name}</h4>
         {item.desc && (
-          <p className="text-[11px] text-[#C9A876]/60 font-light truncate">{item.desc}</p>
+          <p className="text-[11px] text-baroque-cream-muted/60 font-light line-clamp-2">{item.desc}</p>
         )}
-        <span className="text-sm font-bold text-[#B8860B] mt-1 block">
+        <span className="text-sm font-bold text-baroque-gold mt-1 block">
           {formatPrice(item.price)}
         </span>
       </div>
       <div className="shrink-0">
         {qty > 0 ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button
               onClick={onRemove}
               aria-label={`Quitar ${item.name}`}
-              className="w-8 h-8 rounded-full bg-[#0A0704] hover:bg-[#B8860B]/10 text-[#E8DCC8] font-bold flex items-center justify-center text-sm transition-all active:scale-90 border border-[#B8860B]/20"
+              className="w-11 h-11 rounded-full bg-baroque-dark hover:bg-baroque-gold/10 text-baroque-cream font-bold flex items-center justify-center text-sm transition-all active:scale-90 border border-baroque-gold/20"
             >
               −
             </button>
-            <span className="text-sm font-bold text-[#B8860B] w-5 text-center">{qty}</span>
+            <span className="text-sm font-bold text-baroque-gold w-5 text-center">{qty}</span>
             <button
               onClick={onAdd}
               aria-label={`Agregar ${item.name}`}
-              className="w-8 h-8 rounded-full btn-burgundy-gradient text-[#E8DCC8] font-bold flex items-center justify-center text-sm transition-all active:scale-90 border border-[#B8860B]/20"
+              className="w-11 h-11 rounded-full btn-burgundy-gradient text-baroque-cream font-bold flex items-center justify-center text-sm transition-all active:scale-90 border border-baroque-gold/20"
             >
               +
             </button>
@@ -101,7 +101,7 @@ export function DishCard({ item, qty, isSpecial, onAdd, onRemove }: Props) {
           <button
             onClick={onAdd}
             aria-label={`Agregar ${item.name}`}
-            className="w-9 h-9 rounded-full btn-burgundy-gradient text-[#E8DCC8] font-bold flex items-center justify-center text-lg transition-all active:scale-90 shadow-[0_4px_15px_rgba(114,47,55,0.3)] border border-[#B8860B]/20"
+            className="w-11 h-11 rounded-full btn-burgundy-gradient text-baroque-cream font-bold flex items-center justify-center text-lg transition-all active:scale-90 shadow-[0_4px_15px_rgba(114,47,55,0.3)] border border-baroque-gold/20"
           >
             +
           </button>

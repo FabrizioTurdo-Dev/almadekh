@@ -7,7 +7,16 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onFinish }: SplashScreenProps) {
   const [showSplash, setShowSplash] = useState(true)
+  const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   const finishedRef = useRef(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    video.muted = true
+    video.play().catch(() => {})
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,12 +45,13 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-almadekh-bg"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-baroque-dark"
           role="presentation"
           aria-hidden="true"
         >
           <video
-            className="w-full h-full object-contain"
+            ref={videoRef}
+            className="w-full h-full object-cover md:object-contain"
             autoPlay
             playsInline
             muted
@@ -49,7 +59,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
             poster="/images/hero.jpg"
             preload="auto"
           >
-            <source src="/preloadHorizontal.mp4" type="video/mp4" />
+            <source src={isMobile ? '/preloadVertical.mp4' : '/preloadHorizontal.mp4'} type="video/mp4" />
           </video>
         </motion.div>
       )}

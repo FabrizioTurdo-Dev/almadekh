@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, ArrowRight, X } from 'lucide-react'
 import { useEventStore } from '../../store/eventStore'
+import { FloatingNotes } from '../decorative/FloatingNotes'
 import { Gallery } from './Gallery'
 import { loadSettings, getTelPhone } from '../../lib/settings'
 
@@ -41,13 +42,25 @@ export function Eventos() {
   const past = events.filter((e) => e.type === 'past')
 
   return (
-    <section id="eventos" className="relative py-28 bg-[#1a0f0c] overflow-hidden">
+    <section id="eventos" className="relative min-h-svh flex items-center justify-center bg-baroque-dark-sec overflow-hidden">
+      <FloatingNotes
+        count={12}
+        colors={[
+          'text-baroque-gold/60',
+          'text-baroque-gold-light/50',
+          'text-baroque-cream-muted/45',
+          'text-baroque-gold/40',
+          'text-baroque-gold-light/35',
+          'text-baroque-cream-muted/30',
+        ]}
+        className="z-0"
+      />
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-[10px] tracking-[3px] uppercase text-[#B8860B] font-semibold block mb-2"
+          className="text-[10px] tracking-[3px] uppercase text-baroque-gold font-semibold block mb-2"
         >
           Encuentros
         </motion.span>
@@ -56,7 +69,7 @@ export function Eventos() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-3xl sm:text-5xl font-bold text-[#E8DCC8] mb-4"
+          className="text-3xl sm:text-5xl font-bold text-baroque-cream mb-4"
           style={{ fontFamily: '"Cinzel", serif' }}
         >
           Próximos Encuentros
@@ -66,7 +79,7 @@ export function Eventos() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="text-sm sm:text-base text-[#C9A876] font-light leading-relaxed mb-10 max-w-2xl mx-auto"
+          className="text-sm sm:text-base text-baroque-cream-muted font-light leading-relaxed mb-10 max-w-2xl mx-auto"
         >
           En Alma Dekh creemos en el arte y la cultura. Organizamos exposiciones, música en vivo, talleres y experiencias únicas.
         </motion.p>
@@ -80,7 +93,7 @@ export function Eventos() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 + i * 0.1 }}
-                className="group bg-[#0A0704] border-2 border-[#B8860B]/15 rounded-2xl overflow-hidden hover:border-[#B8860B]/40 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_30px_rgba(184,134,11,0.15)]"
+                className="group bg-baroque-dark border-2 border-baroque-gold/15 rounded-2xl overflow-hidden hover:border-baroque-gold/40 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_30px_rgba(184,134,11,0.15)]"
               >
                 {event.image_url && (
                   <div
@@ -99,7 +112,7 @@ export function Eventos() {
                   </div>
                 )}
                 <div className="p-5">
-                  <div className="flex items-center gap-3 text-[11px] text-[#C9A876]/60 mb-3">
+                  <div className="flex items-center gap-3 text-[11px] text-baroque-cream-muted/60 mb-3">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" />
                       {formatDate(event.date)}
@@ -111,10 +124,10 @@ export function Eventos() {
                       </span>
                     )}
                   </div>
-                  <h3 className="text-base font-bold text-[#E8DCC8] mb-1.5 group-hover:text-[#B8860B] transition-colors" style={{ fontFamily: '"Cinzel", serif' }}>
+                  <h3 className="text-base font-bold text-baroque-cream mb-1.5 group-hover:text-baroque-gold transition-colors" style={{ fontFamily: '"Cinzel", serif' }}>
                     {event.title}
                   </h3>
-                  <p className="text-xs text-[#C9A876]/60 leading-relaxed">
+                  <p className="text-xs text-baroque-cream-muted/60 leading-relaxed">
                     {event.description}
                   </p>
                 </div>
@@ -129,7 +142,7 @@ export function Eventos() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-xl font-bold text-[#E8DCC8] mb-6"
+              className="text-xl font-bold text-baroque-cream mb-6"
               style={{ fontFamily: '"Cinzel", serif' }}
             >
               Encuentros Anteriores
@@ -142,7 +155,7 @@ export function Eventos() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.05 }}
-                  className="bg-[#0A0704] border border-[#B8860B]/10 rounded-xl p-4 hover:border-[#B8860B]/30 transition-all"
+                  className="bg-baroque-dark border border-baroque-gold/10 rounded-xl p-4 hover:border-baroque-gold/30 transition-all"
                 >
                   {event.image_url && (
                     <div
@@ -160,13 +173,13 @@ export function Eventos() {
                       />
                     </div>
                   )}
-                  <div className="text-[10px] text-[#C9A876]/50 mb-1">
+                  <div className="text-[10px] text-baroque-cream-muted/50 mb-1">
                     {formatDate(event.date)}
                   </div>
-                  <h4 className="text-xs font-semibold text-[#E8DCC8] mb-1">
+                  <h4 className="text-xs font-semibold text-baroque-cream mb-1">
                     {event.title}
                   </h4>
-                  <p className="text-[10px] text-[#C9A876]/50 leading-relaxed line-clamp-2">
+                  <p className="text-[10px] text-baroque-cream-muted/50 leading-relaxed line-clamp-2">
                     {event.description}
                   </p>
                 </motion.div>
@@ -186,7 +199,7 @@ export function Eventos() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[10px] tracking-[3px] uppercase text-[#B8860B] font-semibold block mb-2"
+            className="text-[10px] tracking-[3px] uppercase text-baroque-gold font-semibold block mb-2"
           >
             Memorias
           </motion.span>
@@ -195,7 +208,7 @@ export function Eventos() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl font-bold text-[#E8DCC8] mb-6"
+            className="text-2xl md:text-3xl font-bold text-baroque-cream mb-6"
             style={{ fontFamily: '"Cinzel", serif' }}
           >
             Galería de Encuentros
@@ -210,12 +223,12 @@ export function Eventos() {
           transition={{ delay: 0.5 }}
           className="mt-12 text-center"
         >
-          <p className="text-sm text-[#C9A876] mb-4">
+          <p className="text-sm text-baroque-cream-muted mb-4">
             ¿Querés organizar un evento en Alma Dekh?
           </p>
           <a
             href={`tel:${telPhone}`}
-            className="inline-flex items-center gap-2 btn-burgundy-gradient text-[#E8DCC8] font-bold py-3.5 px-7 rounded-xl transition-all text-sm border border-[#B8860B]/30"
+            className="inline-flex items-center gap-2 btn-burgundy-gradient text-baroque-cream font-bold py-3.5 px-7 rounded-xl transition-all text-sm border border-baroque-gold/30"
           >
             Contactanos
             <ArrowRight className="w-4 h-4" />
@@ -230,12 +243,12 @@ export function Eventos() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4 border border-[#B8860B]/20"
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4 border border-baroque-gold/20"
             onClick={() => setPreviewUrl(null)}
           >
             <button
               onClick={() => setPreviewUrl(null)}
-              className="absolute top-4 right-4 z-10 text-[#C9A876]/60 hover:text-[#E8DCC8] transition-colors p-2"
+              className="absolute top-4 right-4 z-10 text-baroque-cream-muted/60 hover:text-baroque-cream transition-colors p-2"
             >
               <X className="w-6 h-6" />
             </button>

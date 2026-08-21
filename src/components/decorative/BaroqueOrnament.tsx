@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 
 interface BaroqueOrnamentProps {
-  variant?: 'scroll' | 'floral' | 'leaf' | 'corner'
+  variant?: 'leaf' | 'corner'
   size?: number
   rotation?: number
   opacity?: number
@@ -9,28 +9,22 @@ interface BaroqueOrnamentProps {
 }
 
 const ornamentImages: Record<string, string> = {
-  scroll: '/images/ornaments/esquinas.jpg',
-  floral: '/images/ornaments/esquinas.jpg',
   leaf: '/images/ornaments/esquinas.jpg',
-  corner: '/images/ornaments/esquinas.jpg',
+  corner: '/images/ornaments/esquinaDorada.webp',
 }
 
 const ornamentBlendModes: Record<string, React.CSSProperties['mixBlendMode']> = {
-  scroll: 'luminosity',
-  floral: 'luminosity',
   leaf: 'multiply',
   corner: 'luminosity',
 }
 
 const defaultSizes = {
-  scroll: { w: 80, h: 120 },
-  floral: { w: 80, h: 120 },
   leaf: { w: 60, h: 100 },
   corner: { w: 100, h: 100 },
 }
 
 export function BaroqueOrnament({
-  variant = 'scroll',
+  variant = 'leaf',
   size,
   rotation = 0,
   opacity = 0.55,
