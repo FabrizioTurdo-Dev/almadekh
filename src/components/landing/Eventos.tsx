@@ -211,7 +211,7 @@ export function Eventos() {
             className="text-2xl md:text-3xl font-bold text-baroque-cream mb-6"
             style={{ fontFamily: '"Cinzel", serif' }}
           >
-            Galería de Encuentros
+            Nuestra Historia 
           </motion.h3>
           <Gallery onPreview={setPreviewUrl} />
         </motion.div>

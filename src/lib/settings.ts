@@ -4,11 +4,13 @@ import { formatDisplayPhone, formatTelPhone } from './phone'
 export interface Settings {
   phone: string
   address: string
+  hours: string
 }
 
 const DEFAULTS: Settings = {
   phone: '5491169720415',
   address: 'La Pista 250, Ingeniero Maschwitz',
+  hours: 'Mar - Vier: 08:30 - 21:00 / Sábados 10:00 - 21:00 y más',
 }
 
 const cache = {
@@ -44,6 +46,7 @@ export async function loadSettings(): Promise<Settings> {
     current = {
       phone: map.get('phone') || DEFAULTS.phone,
       address: map.get('address') || DEFAULTS.address,
+      hours: map.get('hours') || DEFAULTS.hours,
     }
     cache.save(current)
     loaded = true
@@ -86,4 +89,8 @@ export async function saveSetting(key: string, value: string): Promise<void> {
 
 export function getAddress(): string {
   return getSettings().address
+}
+
+export function getHours(): string {
+  return getSettings().hours
 }

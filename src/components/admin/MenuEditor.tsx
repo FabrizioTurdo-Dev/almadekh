@@ -54,6 +54,7 @@ export function MenuEditor() {
   const [editPrice, setEditPrice] = useState('')
   const [deletingItem, setDeletingItem] = useState<{ catIdx: number; itemIdx: number } | null>(null)
   const [showCatModal, setShowCatModal] = useState(false)
+  const [deletingCategory, setDeletingCategory] = useState<number | null>(null)
   const [newCatName, setNewCatName] = useState('')
   const [newCatSpecial, setNewCatSpecial] = useState(true)
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({ state: 'idle' })
@@ -131,6 +132,14 @@ export function MenuEditor() {
       return
     }
     await save(replaceItem(fresh, catIdx, itemIdx, { image_url: result.url }))
+  }
+
+  const handleDeleteCategory = (idx: number) => {
+    const next = categories.filter((_, ci) => ci !== idx)
+    void save(next)
+    if (idx <= activeCategory) {
+      setActiveCategory(Math.max(0, activeCategory - 1))
+    }
   }
 
   const handleAddCategory = () => {
@@ -219,6 +228,13 @@ export function MenuEditor() {
                   ⭐
                 </button>
               )}
+              <button
+                onClick={() => setDeletingCategory(idx)}
+                className="text-xs px-1.5 py-1 rounded-full bg-almadekh-surface text-almadekh-subdued hover:bg-almadekh-rose/10 hover:text-almadekh-rose transition-all"
+                title="Eliminar categoría"
+              >
+                🗑️
+              </button>
             </div>
           )
         })}
@@ -358,6 +374,43 @@ export function MenuEditor() {
                 onClick={() => {
                   handleDeleteItem(deletingItem.catIdx, deletingItem.itemIdx)
                   setDeletingItem(null)
+                }}
+                className="flex-1 bg-almadekh-rose hover:bg-almadekh-rose-light text-white font-bold py-2.5 rounded-xl transition-all text-sm"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deletingCategory !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onClick={() => setDeletingCategory(null)}>
+          <div
+            className="bg-almadekh-bg border border-almadekh-border rounded-2xl w-full max-w-sm p-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-serif font-bold text-almadekh-text mb-2">Eliminar categoría</h3>
+            <p className="text-sm text-almadekh-muted mb-5">
+              ¿Seguro que querés eliminar <strong className="text-almadekh-text">{categories[deletingCategory]?.name}</strong>
+              {categories[deletingCategory]?.items.length
+                ? <> y sus <strong className="text-almadekh-text">{categories[deletingCategory]?.items.length}</strong> platos</>
+                : null}? Esta acción no se puede deshacer.
+              {FIXED_CATEGORY_IDS.includes(categories[deletingCategory]?.id ?? '') && (
+                <> Es una categoría original del menú.</>
+              )}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeletingCategory(null)}
+                className="flex-1 bg-almadekh-surface hover:bg-almadekh-border text-almadekh-text font-semibold py-2.5 rounded-xl transition-all text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  handleDeleteCategory(deletingCategory)
+                  setDeletingCategory(null)
                 }}
                 className="flex-1 bg-almadekh-rose hover:bg-almadekh-rose-light text-white font-bold py-2.5 rounded-xl transition-all text-sm"
               >

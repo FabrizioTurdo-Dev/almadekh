@@ -1,5 +1,13 @@
+import { useState, useEffect } from 'react'
+import { loadSettings, getHours } from '../../lib/settings'
 
 export function Footer() {
+  const [hours, setHours] = useState('Mar - Vier: 08:30 - 21:00 / Sábados 10:00 - 21:00 y más')
+
+  useEffect(() => {
+    loadSettings().then(() => setHours(getHours()))
+  }, [])
+
   return (
     <footer className="bg-gradient-to-r from-baroque-dark via-baroque-dark-sec to-baroque-dark border-t-2 border-baroque-gold/30 py-12">
       <div className="container mx-auto px-6">
@@ -14,7 +22,7 @@ export function Footer() {
           </div>
           <div>
             <h4 className="text-baroque-gold tracking-widest mb-2 text-xs" style={{ fontFamily: '"Cinzel", serif' }}>HORARIO</h4>
-            <p className="text-baroque-cream-muted text-sm">Mar - Vier: 08:30 - 21:00 / Sabados 10:00 - 21:00 y mas</p>
+            <p className="text-baroque-cream-muted text-sm">{hours}</p>
           </div>
           <div>
             <h4 className="text-baroque-gold tracking-widest mb-2 text-xs" style={{ fontFamily: '"Cinzel", serif' }}>CONTACTO</h4>

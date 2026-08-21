@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Phone, MapPin, Clock } from 'lucide-react'
 import { BaroqueOrnament } from '../decorative/BaroqueOrnament'
-import { loadSettings, getDisplayPhone, getTelPhone, getAddress } from '../../lib/settings'
+import { loadSettings, getDisplayPhone, getTelPhone, getAddress, getHours } from '../../lib/settings'
 
 // `import.meta.env.PROD` lo resuelve Vite en tiempo de compilacion, asi que en
 // desarrollo el bloque entero se elimina del bundle. Antes esto era
@@ -15,12 +15,15 @@ export function Contacto() {
   const [displayPhone, setDisplayPhone] = useState('011 6972-0415')
   const [telPhone, setTelPhone] = useState('01169720415')
   const [address, setAddress] = useState('La Pista 250, Ingeniero Maschwitz')
+  const [telFijo, setTelFijo] = useState('3484662776')
+  const [hours, setHours] = useState('Mar - Vier: 08:30 - 21:00 / Sábados 10:00 - 21:00 y más')
 
   useEffect(() => {
     loadSettings().then(() => {
       setDisplayPhone(getDisplayPhone())
       setTelPhone(getTelPhone())
       setAddress(getAddress())
+      setHours(getHours())
     })
   }, [])
 
@@ -84,7 +87,8 @@ export function Contacto() {
               content: (
                 <p className="text-xs text-baroque-cream-muted leading-relaxed">
                   <a href={`tel:${telPhone}`} className="inline-flex items-center min-h-11 text-baroque-gold hover:underline font-medium">
-                    {displayPhone}
+                   
+                    <p>Si no contesta WhatsApp {displayPhone}, hacer sonar el siguiente teléfono fijo: {telFijo}</p>
                   </a>
                 </p>
               ),
@@ -92,7 +96,7 @@ export function Contacto() {
             {
               title: 'Horarios',
               Icon: Clock,
-              content: <p className="text-xs text-baroque-cream-muted leading-relaxed">Abierto todos los días.</p>,
+              content: <p className="text-xs text-baroque-cream-muted leading-relaxed">{hours}</p>,
             },
           ].map((item, i) => {
             const { Icon } = item
@@ -178,8 +182,8 @@ export function Contacto() {
             10/10 en Broccolino · 22 reseñas
           </span>
           <p className="text-sm text-baroque-cream-muted leading-relaxed mb-4">
-            "Los Pilares de la Experiencia Alma Dekh
-            Un Ambiente que Cautiva
+            "Los pilares de la experiencia Alma Dekh:
+            Un ambiente que cautiva.
             El principal atractivo que emana de las opiniones y las imágenes disponibles es su atmósfera. Lejos de la estética estandarizada de muchas cadenas de restaurantes, Alma Dekh apuesta por una ambientación que se siente como el living de una casa, pero con un toque bohemio y artístico. Los clientes destacan la sensación de estar "como en casa", un espacio donde los niños pueden jugar con libertad gracias a la disposición de juguetes, y los adultos pueden relajarse en un entorno que invita a la calma. Esta sensación de hogar, de "calor de hogar", es un tema recurrente y parece ser el resultado directo de una visión muy clara por parte de su propietaria."
           </p>
           <span className="inline-flex items-center gap-1 text-xs text-baroque-gold font-semibold group-hover:underline">

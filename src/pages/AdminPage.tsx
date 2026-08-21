@@ -128,6 +128,7 @@ export function AdminPage() {
 function SettingsPanel() {
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
+  const [hours, setHours] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -140,6 +141,7 @@ function SettingsPanel() {
     loadSettings().then((s) => {
       setPhone(s.phone)
       setAddress(s.address)
+      setHours(s.hours)
     })
   }, [])
 
@@ -148,6 +150,7 @@ function SettingsPanel() {
     await Promise.all([
       saveSetting('phone', phone),
       saveSetting('address', address),
+      saveSetting('hours', hours),
     ])
     setSaving(false)
     setSaved(true)
@@ -179,6 +182,15 @@ function SettingsPanel() {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="La Pista 250, Ingeniero Maschwitz"
+              className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-2.5 text-sm text-almadekh-text"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-almadekh-muted block mb-1">Horarios</label>
+            <input
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              placeholder="Mar - Vier: 08:30 - 21:00 / Sábados 10:00 - 21:00 y más"
               className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-2.5 text-sm text-almadekh-text"
             />
           </div>

@@ -48,6 +48,37 @@ async function pushToSupabase() {
     })
     if (itemErr) throw itemErr
   }
+
+  // El upsert de arriba nunca borra filas: si el usuario elimina una
+  // categoria o un plato localmente, sin esto seguian vivos en Supabase y
+  // volvian a aparecer en el proximo refresh remoto. Se borran primero los
+  // items huerfanos (por si la FK no tiene cascade) y despues las categorias.
+  const categoryIds = categoriesData.map((c) => c.id)
+  const itemIds = itemsData.map((i) => i.id)
+
+  const { data: existingItems, error: existingItemsErr } = await supabase
+    .from('menu_items')
+    .select('id')
+  if (existingItemsErr) throw existingItemsErr
+  const itemIdsToDelete = (existingItems ?? [])
+    .map((i) => i.id)
+    .filter((id) => !itemIds.includes(id))
+  if (itemIdsToDelete.length > 0) {
+    const { error } = await supabase.from('menu_items').delete().in('id', itemIdsToDelete)
+    if (error) throw error
+  }
+
+  const { data: existingCats, error: existingCatsErr } = await supabase
+    .from('categories')
+    .select('id')
+  if (existingCatsErr) throw existingCatsErr
+  const categoryIdsToDelete = (existingCats ?? [])
+    .map((c) => c.id)
+    .filter((id) => !categoryIds.includes(id))
+  if (categoryIdsToDelete.length > 0) {
+    const { error } = await supabase.from('categories').delete().in('id', categoryIdsToDelete)
+    if (error) throw error
+  }
 }
 
 async function pullFromSupabase(): Promise<Category[] | null> {
