@@ -15,7 +15,7 @@ export function Contacto() {
   const [displayPhone, setDisplayPhone] = useState('011 6972-0415')
   const [telPhone, setTelPhone] = useState('01169720415')
   const [address, setAddress] = useState('La Pista 250, Ingeniero Maschwitz')
-  const [telFijo, setTelFijo] = useState('3484662776')
+  const telFijo = '3484662776'
   const [hours, setHours] = useState('Mar - Vier: 08:30 - 21:00 / Sábados 10:00 - 21:00 y más')
 
   useEffect(() => {
