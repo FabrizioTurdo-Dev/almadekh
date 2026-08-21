@@ -31,3 +31,18 @@ supabase/.temp/
 # Playwright
 test-results/
 playwright-report/
+
+# Artefactos de debug / one-off (no versionar)
+screenshot-*.png
+/test-*.mjs
+
+# Referencias y documentos internos (se mantienen en disco, fuera del repo)
+inspiracion.html
+presupuesto/
+
+# Originales de assets: se conservan en disco para poder re-exportar, pero lo
+# que se publica son las versiones optimizadas de public/.
+assets-source/
+
+# Config local de Claude Code
+.claude/
