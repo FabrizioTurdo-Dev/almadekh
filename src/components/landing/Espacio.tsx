@@ -1,22 +1,60 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { BaroqueOrnament } from '../decorative/BaroqueOrnament'
+import { espacioImages } from '../../data/espacioGallery'
+
+const SLIDE_INTERVAL = 4500
 
 export function Espacio() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  })
+  const [index, setIndex] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Recorrido del parallax en px. El marco recorta y la imagen lleva 2x este
-  // valor de alto extra (`h-[calc(...+5rem)]` con `-mt-10`), asi que en ningun
-  // punto del scroll se ve el fondo dentro del marco.
-  const PARALLAX_TRAVEL = 40
-  const imageY = useTransform(scrollYProgress, [0, 1], [PARALLAX_TRAVEL, -PARALLAX_TRAVEL])
+  const stopAutoplay = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = null
+  }, [])
+
+  const startAutoplay = useCallback(() => {
+    stopAutoplay()
+    intervalRef.current = setInterval(() => {
+      setIndex((i) => (i + 1) % espacioImages.length)
+    }, SLIDE_INTERVAL)
+  }, [stopAutoplay])
+
+  // El autoplay del marco chico se pausa mientras el lightbox esta abierto,
+  // para no cambiar la foto ampliada mientras el usuario la esta mirando.
+  useEffect(() => {
+    if (lightboxOpen) {
+      stopAutoplay()
+    } else {
+      startAutoplay()
+    }
+    return stopAutoplay
+  }, [lightboxOpen, startAutoplay, stopAutoplay])
+
+  const goNext = useCallback(() => {
+    setIndex((i) => (i + 1) % espacioImages.length)
+  }, [])
+
+  const goPrev = useCallback(() => {
+    setIndex((i) => (i - 1 + espacioImages.length) % espacioImages.length)
+  }, [])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false)
+      if (e.key === 'ArrowRight') goNext()
+      if (e.key === 'ArrowLeft') goPrev()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [lightboxOpen, goNext, goPrev])
 
   return (
-    <section id="espacio" ref={sectionRef} className="relative min-h-svh flex items-center justify-center bg-baroque-dark">
+    <section id="espacio" className="relative min-h-svh flex items-center justify-center bg-baroque-dark">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
@@ -77,7 +115,7 @@ export function Espacio() {
             </motion.ul>
           </div>
 
-          {/* Imagen con parallax */}
+          {/* Carrusel de fotos del espacio */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -85,22 +123,29 @@ export function Espacio() {
             transition={{ delay: 0.4, duration: 0.7 }}
             className="relative"
           >
-            {/* El marco define el alto visible; la imagen es PARALLAX_TRAVEL mas
-                alta a cada lado para que el desplazamiento nunca descubra el
-                fondo. Con la imagen del mismo alto que el marco quedaba una
-                franja vacia de hasta 42px abajo. */}
-            <div className="overflow-hidden rounded-3xl shadow-xl border-2 border-baroque-gold/30 h-80 md:h-[28rem]">
-              <motion.img
-                src="/images/espacio.jpg"
-                alt="Galería exterior de Alma Dekh"
-                className="w-full h-[calc(20rem+5rem)] md:h-[calc(28rem+5rem)] -mt-10 object-cover"
-                loading="lazy"
-                decoding="async"
-                width={800}
-                height={500}
-                style={{ y: imageY }}
-              />
-            </div>
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              aria-label="Ampliar galería del espacio"
+              className="relative block w-full overflow-hidden rounded-3xl shadow-xl border-2 border-baroque-gold/30 h-80 md:h-[28rem] cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-baroque-gold/60"
+            >
+              <AnimatePresence>
+                <motion.img
+                  key={espacioImages[index].src}
+                  src={espacioImages[index].src}
+                  alt={espacioImages[index].alt}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  width={espacioImages[index].width}
+                  height={espacioImages[index].height}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                />
+              </AnimatePresence>
+            </button>
             {/* Ornamento superior-izquierdo: se escala en mobile en vez de
                 ocultarse. El inferior-derecho se oculta directamente en
                 mobile por decisión de diseño y solo aparece desde `md:`. */}
@@ -113,6 +158,70 @@ export function Espacio() {
           </motion.div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4"
+            onClick={() => setLightboxOpen(false)}
+          >
+            <button
+              onClick={() => setLightboxOpen(false)}
+              aria-label="Cerrar"
+              className="absolute top-4 right-4 z-10 text-baroque-cream-muted/60 hover:text-baroque-cream transition-colors p-2"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                goPrev()
+              }}
+              aria-label="Foto anterior"
+              className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-10 text-baroque-cream-muted/60 hover:text-baroque-gold transition-colors p-2"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={espacioImages[index].src}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.25 }}
+                src={espacioImages[index].src}
+                alt={espacioImages[index].alt}
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-lg cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  goNext()
+                }}
+              />
+            </AnimatePresence>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                goNext()
+              }}
+              aria-label="Foto siguiente"
+              className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-10 text-baroque-cream-muted/60 hover:text-baroque-gold transition-colors p-2"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-baroque-cream-muted/60 tracking-widest">
+              {index + 1} / {espacioImages.length}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
