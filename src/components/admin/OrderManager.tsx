@@ -13,11 +13,11 @@ const STATUS_LABELS: Record<Order['status'], string> = {
 }
 
 const STATUS_COLORS: Record<Order['status'], string> = {
-  pending: 'bg-almadekh-rose/15 text-almadekh-rose',
-  confirmed: 'bg-almadekh-gold/15 text-almadekh-gold',
-  preparation: 'bg-blue-100 text-blue-600',
-  ready: 'bg-almadekh-teal/15 text-almadekh-teal',
-  cancelled: 'bg-gray-100 text-gray-400',
+  pending: 'bg-status-pending/15 text-status-pending',
+  confirmed: 'bg-status-confirmed/15 text-status-confirmed',
+  preparation: 'bg-status-prep/15 text-status-prep',
+  ready: 'bg-status-ready/15 text-status-ready',
+  cancelled: 'bg-status-cancelled/15 text-status-cancelled',
 }
 
 function timeAgo(dateStr: string) {
@@ -69,8 +69,8 @@ export function OrderManager() {
             onClick={() => setFilter(f)}
             className={`shrink-0 px-3.5 py-2 rounded-full text-[11px] font-semibold transition-all ${
               filter === f
-                ? 'bg-almadekh-teal text-white'
-                : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border hover:bg-almadekh-cream'
+                ? 'bg-almadekh-teal text-almadekh-bg'
+                : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border hover:bg-almadekh-gold/10'
             }`}
           >
             {f === 'all' ? 'Todos' : STATUS_LABELS[f]} ({f === 'all' ? orders.length : orders.filter((o) => o.status === f).length})
@@ -92,7 +92,7 @@ export function OrderManager() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4"
+                className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">

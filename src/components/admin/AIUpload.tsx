@@ -3,9 +3,10 @@ import { Sparkles } from 'lucide-react'
 
 interface Props {
   onUpload: (file: File) => Promise<void>
+  progress?: string
 }
 
-export function AIUpload({ onUpload }: Props) {
+export function AIUpload({ onUpload, progress }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [processing, setProcessing] = useState(false)
 
@@ -22,6 +23,8 @@ export function AIUpload({ onUpload }: Props) {
     if (inputRef.current) inputRef.current.value = ''
   }
 
+  const isBusy = processing || !!progress
+
   return (
     <>
       <input
@@ -33,11 +36,11 @@ export function AIUpload({ onUpload }: Props) {
       />
       <button
         onClick={handleClick}
-        disabled={processing}
+        disabled={isBusy}
         className="text-almadekh-subdued hover:text-almadekh-teal transition-colors text-sm p-1 relative"
-        title="Subir foto"
+        title={progress || 'Subir foto'}
       >
-        {processing ? (
+        {isBusy ? (
           <span className="inline-block animate-spin">⏳</span>
         ) : (
           <Sparkles className="w-4 h-4" />

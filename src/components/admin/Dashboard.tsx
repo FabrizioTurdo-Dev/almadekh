@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { useOrderStore } from '../../store/orderStore'
+import { useOrderStore, ordersToday, ordersThisWeek } from '../../store/orderStore'
 import { formatPrice } from '../../lib/format'
 
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -11,14 +11,14 @@ function getHourLabel(dateStr: string) {
 }
 
 export function Dashboard() {
-  const { orders, loading, fetchOrders, getTodayOrders, getThisWeekOrders } = useOrderStore()
+  const { orders, loading, fetchOrders } = useOrderStore()
 
   useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
 
-  const todayOrders = useMemo(() => getTodayOrders(), [orders])
-  const weekOrders = useMemo(() => getThisWeekOrders(), [orders])
+  const todayOrders = useMemo(() => ordersToday(orders), [orders])
+  const weekOrders = useMemo(() => ordersThisWeek(orders), [orders])
 
   // Stats
   const totalToday = todayOrders.length
@@ -90,7 +90,7 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4 text-center"
+            className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4 text-center"
           >
             <div className="text-xl font-bold text-almadekh-teal truncate">{s.num}</div>
             <div className="text-[10px] text-almadekh-muted uppercase tracking-wider mt-1">{s.label}</div>
@@ -98,7 +98,7 @@ export function Dashboard() {
         ))}
       </div>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4 mb-5 h-36 flex flex-col justify-center items-center">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4 mb-5 h-36 flex flex-col justify-center items-center">
         <div className="flex items-end gap-2 w-full max-w-[260px] h-20">
           {weeklyChart.map((d, i) => (
             <div
@@ -106,7 +106,7 @@ export function Dashboard() {
               className="flex-1 rounded-t-md transition-all"
               style={{
                 height: `${d.count > 0 ? (d.count / maxWeekCount) * 100 : 4}%`,
-                background: `rgba(90,158,148,${0.2 + i * 0.1})`,
+                background: `rgba(184,134,11,${0.25 + i * 0.09})`,
               }}
             />
           ))}
@@ -127,7 +127,7 @@ export function Dashboard() {
           {todayOrders.slice(0, 8).map((o) => (
             <div
               key={o.id}
-              className="flex items-center justify-between bg-white shadow-sm border border-almadekh-border rounded-xl px-3.5 py-2.5 text-xs"
+              className="flex items-center justify-between bg-almadekh-surface border border-almadekh-border rounded-xl px-3.5 py-2.5 text-xs"
             >
               <span className="font-medium text-almadekh-text min-w-[80px]">{o.customer_name}</span>
               <span className="text-almadekh-muted flex-1 truncate px-2">
@@ -136,12 +136,12 @@ export function Dashboard() {
               <span
                 className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                   o.status === 'ready'
-                    ? 'bg-almadekh-teal/15 text-almadekh-teal'
+                    ? 'bg-status-ready/15 text-status-ready'
                     : o.status === 'confirmed'
-                    ? 'bg-almadekh-gold/15 text-almadekh-gold'
+                    ? 'bg-status-confirmed/15 text-status-confirmed'
                     : o.status === 'preparation'
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'bg-almadekh-rose/15 text-almadekh-rose'
+                    ? 'bg-status-prep/15 text-status-prep'
+                    : 'bg-status-pending/15 text-status-pending'
                 }`}
               >
                 {o.status === 'ready' ? 'Listo' : o.status === 'confirmed' ? 'Confirmado' : o.status === 'preparation' ? 'Preparación' : 'Pendiente'}

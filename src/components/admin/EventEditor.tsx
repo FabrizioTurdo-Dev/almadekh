@@ -3,6 +3,7 @@ import { useEventStore } from '../../store/eventStore'
 import { Calendar, Clock, Trash2, Plus, Image } from 'lucide-react'
 import { AIUpload } from './AIUpload'
 import { uploadImage } from '../../lib/upload'
+import { SaveError } from './SaveError'
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + 'T12:00:00')
@@ -29,8 +30,9 @@ export function EventEditor() {
   const [form, setForm] = useState(emptyForm)
   const [filter, setFilter] = useState<'all' | 'future' | 'past'>('all')
   const [uploading, setUploading] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.title.trim() || !form.date) return
 
     const payload = {
@@ -42,14 +44,21 @@ export function EventEditor() {
       image_url: form.image_url || undefined,
     }
 
-    if (editingId) {
-      updateEvent(editingId, payload)
-    } else {
-      addEvent({
-        id: 'evt_' + Date.now(),
-        ...payload,
-        created_at: new Date().toISOString(),
-      })
+    setSaveError('')
+
+    const result = editingId
+      ? await updateEvent(editingId, payload)
+      : await addEvent({
+          id: 'evt_' + Date.now(),
+          ...payload,
+          created_at: new Date().toISOString(),
+        })
+
+    if (result.error) {
+      // El evento queda en la lista (estado optimista) pero el formulario no
+      // se cierra: asi el error se ve y no se pierde lo cargado.
+      setSaveError(result.error)
+      return
     }
 
     setForm(emptyForm)
@@ -72,8 +81,10 @@ export function EventEditor() {
     setShowForm(true)
   }
 
-  const handleDelete = (id: string) => {
-    deleteEvent(id)
+  const handleDelete = async (id: string) => {
+    setSaveError('')
+    const result = await deleteEvent(id)
+    if (result.error) setSaveError(result.error)
     if (editingId === id) {
       setForm(emptyForm)
       setEditingId(null)
@@ -94,6 +105,8 @@ export function EventEditor() {
 
   return (
     <div className="pb-28">
+      <SaveError message={saveError} />
+
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-serif font-bold text-almadekh-text">Eventos</h2>
@@ -107,7 +120,7 @@ export function EventEditor() {
             setEditingId(null)
             setShowForm(true)
           }}
-          className="bg-almadekh-teal hover:bg-almadekh-teal-light text-white text-xs font-bold px-4 py-2 rounded-full transition-all flex items-center gap-1.5"
+          className="bg-almadekh-teal hover:bg-almadekh-teal-light text-almadekh-bg text-xs font-bold px-4 py-2 rounded-full transition-all flex items-center gap-1.5"
         >
           <Plus className="w-4 h-4" />
           Nuevo
@@ -121,8 +134,8 @@ export function EventEditor() {
             onClick={() => setFilter(f)}
             className={`px-3.5 py-2 rounded-full text-[11px] font-semibold transition-all ${
               filter === f
-                ? 'bg-almadekh-teal text-white'
-                : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border hover:bg-almadekh-cream'
+                ? 'bg-almadekh-teal text-almadekh-bg'
+                : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border hover:bg-almadekh-gold/10'
             }`}
           >
             {f === 'all' ? 'Todas' : f === 'future' ? 'Futuras' : 'Pasadas'}
@@ -140,7 +153,7 @@ export function EventEditor() {
         {filtered.map((event) => (
           <div
             key={event.id}
-            className="bg-white shadow-sm border border-almadekh-border rounded-xl p-3.5 flex items-center gap-3"
+            className="bg-almadekh-surface border border-almadekh-border rounded-xl p-3.5 flex items-center gap-3"
           >
             <div className="w-10 h-10 rounded-lg bg-almadekh-surface shrink-0 flex items-center justify-center text-base overflow-hidden">
               {event.image_url ? (
@@ -255,7 +268,7 @@ export function EventEditor() {
                       <img src={form.image_url} alt="Vista previa" className="w-full h-full object-cover" />
                       <button
                         onClick={() => setForm({ ...form, image_url: '' })}
-                        className="absolute top-0.5 right-0.5 bg-almadekh-text/60 rounded-full w-4 h-4 flex items-center justify-center text-[10px] text-white"
+                        className="absolute top-0.5 right-0.5 bg-almadekh-bg/80 border border-almadekh-border rounded-full w-4 h-4 flex items-center justify-center text-[10px] text-almadekh-text"
                       >
                         ×
                       </button>
@@ -282,7 +295,7 @@ export function EventEditor() {
                       onClick={() => setForm({ ...form, type: t })}
                       className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                         form.type === t
-                          ? 'bg-almadekh-teal text-white'
+                          ? 'bg-almadekh-teal text-almadekh-bg'
                           : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border'
                       }`}
                     >
@@ -304,7 +317,7 @@ export function EventEditor() {
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="flex-1 bg-almadekh-teal hover:bg-almadekh-teal-light text-white font-bold py-2.5 rounded-xl transition-all text-sm"
+                  className="flex-1 bg-almadekh-teal hover:bg-almadekh-teal-light text-almadekh-bg font-bold py-2.5 rounded-xl transition-all text-sm"
                 >
                   {editingId ? 'Guardar' : 'Crear'}
                 </button>

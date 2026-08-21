@@ -8,12 +8,14 @@ const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
 export function Analytics() {
   const { orders, fetchOrders } = useOrderStore()
-  const { categories, loadFromStorage } = useMenuStore()
+  const { categories } = useMenuStore()
 
+  // `categories` ya lo mantiene al dia la suscripcion que abre `App`. Llamar
+  // aca a `loadFromStorage()` derribaba ese canal y creaba otro, y ademas se
+  // descartaba la funcion de baja que devuelve.
   useEffect(() => {
     fetchOrders()
-    loadFromStorage()
-  }, [fetchOrders, loadFromStorage])
+  }, [fetchOrders])
 
   // Build category lookup: item name -> category name
   const categoryMap = useMemo(() => {
@@ -70,53 +72,53 @@ export function Analytics() {
     <div className="pb-28">
       <h2 className="text-lg font-serif font-bold text-almadekh-text mb-5">Analytics</h2>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4 mb-5">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4 mb-5">
         <h3 className="text-xs font-semibold text-almadekh-text mb-3">Pedidos por día</h3>
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={weeklyData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-            <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#7a6e62' }} />
-            <YAxis tick={{ fontSize: 10, fill: '#7a6e62' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,134,11,0.12)" />
+            <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#C9A876' }} />
+            <YAxis tick={{ fontSize: 10, fill: '#C9A876' }} />
             <Tooltip
               contentStyle={{
-                background: '#faf8f5',
-                border: '1px solid rgba(0,0,0,0.06)',
+                background: '#1a0f0c',
+                border: '1px solid rgba(184,134,11,0.25)',
                 borderRadius: 8,
                 fontSize: 12,
               }}
-              labelStyle={{ color: '#2d2a26' }}
+              labelStyle={{ color: '#E8DCC8' }}
             />
-            <Line type="monotone" dataKey="orders" stroke="#5a9e94" strokeWidth={2} dot={{ fill: '#5a9e94', r: 3 }} />
+            <Line type="monotone" dataKey="orders" stroke="#B8860B" strokeWidth={2} dot={{ fill: '#d4a832', r: 3 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4 mb-5">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4 mb-5">
         <h3 className="text-xs font-semibold text-almadekh-text mb-3">Ingresos por día</h3>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={weeklyData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
-            <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#7a6e62' }} />
-            <YAxis tick={{ fontSize: 10, fill: '#7a6e62' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(184,134,11,0.12)" />
+            <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#C9A876' }} />
+            <YAxis tick={{ fontSize: 10, fill: '#C9A876' }} />
             <Tooltip
               contentStyle={{
-                background: '#faf8f5',
-                border: '1px solid rgba(0,0,0,0.06)',
+                background: '#1a0f0c',
+                border: '1px solid rgba(184,134,11,0.25)',
                 borderRadius: 8,
                 fontSize: 12,
               }}
-              labelStyle={{ color: '#2d2a26' }}
+              labelStyle={{ color: '#E8DCC8' }}
               formatter={(value) => {
                 if (typeof value === 'number') return [formatPrice(value), 'Ingresos']
                 return [value, 'Ingresos']
               }}
             />
-            <Bar dataKey="revenue" fill="#5a9e94" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="revenue" fill="#B8860B" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4">
         <h3 className="text-xs font-semibold text-almadekh-text mb-3">Categorías más vendidas</h3>
         {categoryData.length === 0 ? (
           <p className="text-center text-almadekh-muted text-sm py-6 italic">Sin datos aún.</p>

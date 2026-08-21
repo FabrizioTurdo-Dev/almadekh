@@ -3,7 +3,8 @@ import { LogOut, LayoutDashboard, ClipboardList, BarChart3, Settings, Calendar, 
 import { TopNav } from '../components/layout/Navbar'
 import { useAuthStore } from '../store/authStore'
 import { initOrdersRealtime } from '../store/orderStore'
-import { loadSettings, saveSetting, getDisplayPhone } from '../lib/settings'
+import { loadSettings, saveSetting } from '../lib/settings'
+import { formatDisplayPhone } from '../lib/phone'
 
 const Dashboard = lazy(() => import('../components/admin/Dashboard').then(m => ({ default: m.Dashboard })))
 const MenuEditor = lazy(() => import('../components/admin/MenuEditor').then(m => ({ default: m.MenuEditor })))
@@ -21,20 +22,8 @@ const tabs = [
 ]
 
 export function AdminPage() {
-  const { user, loading, login, logout } = useAuthStore()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const logout = useAuthStore((s) => s.logout)
   const [activeTab, setActiveTab] = useState('dashboard')
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    const result = await login(email, password)
-    if (result.error) {
-      setError(result.error)
-    }
-  }
 
   const handleLogout = () => {
     logout()
@@ -44,55 +33,6 @@ export function AdminPage() {
     const unsub = initOrdersRealtime()
     return () => unsub()
   }, [])
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center px-6">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-serif font-bold text-almadekh-teal mb-1">
-            Alma Dekh
-          </h2>
-          <p className="text-sm text-almadekh-muted">Panel de Administración</p>
-        </div>
-        <form
-          onSubmit={handleLogin}
-          className="bg-white border border-almadekh-border rounded-2xl p-6 max-w-sm mx-auto w-full shadow-sm"
-        >
-          <label htmlFor="admin-email" className="text-xs text-almadekh-muted block mb-1.5">Email</label>
-          <input
-            id="admin-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@almadekh.com"
-            className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-3 text-sm text-almadekh-text placeholder-almadekh-subdued mb-3"
-            autoFocus
-            required
-          />
-          <label htmlFor="admin-password" className="text-xs text-almadekh-muted block mb-1.5">Contraseña</label>
-          <input
-            id="admin-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ingresá tu contraseña"
-            className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-3 text-sm text-almadekh-text placeholder-almadekh-subdued mb-3"
-            required
-          />
-          {error && (
-            <p className="text-almadekh-rose text-xs mb-2">{error}</p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-almadekh-teal hover:bg-almadekh-teal-light text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50"
-          >
-            {loading ? 'Ingresando...' : 'Ingresar'}
-          </button>
-        </form>
-      </div>
-    )
-  }
 
   return (
     <div className="bg-almadekh-bg flex flex-col">
@@ -151,7 +91,7 @@ export function AdminPage() {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-almadekh-bg/95 backdrop-blur-xl border-t border-almadekh-border pb-5 pt-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-almadekh-bg/95 backdrop-blur-xl border-t border-almadekh-border pb-safe pt-1">
         <div className="flex justify-around">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id
@@ -190,6 +130,11 @@ function SettingsPanel() {
   const [address, setAddress] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // Se arma con el dominio en el que corre la app: antes era el literal
+  // 'almadekh.com/menu', que quedaba mal en cualquier otro despliegue.
+  const menuUrl = `${window.location.origin}/menu`
 
   useEffect(() => {
     loadSettings().then((s) => {
@@ -213,7 +158,7 @@ function SettingsPanel() {
     <div className="space-y-6">
       <h2 className="text-lg font-serif font-bold text-almadekh-text">Configuración</h2>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4">
         <h3 className="text-xs font-semibold text-almadekh-text mb-3">Contacto</h3>
         <div className="space-y-3">
           <div>
@@ -225,7 +170,7 @@ function SettingsPanel() {
               className="w-full bg-almadekh-surface border border-almadekh-border rounded-xl px-4 py-2.5 text-sm text-almadekh-text"
             />
             <span className="text-[10px] text-almadekh-subdued mt-1 block">
-              Se muestra como: {getDisplayPhone()}
+              Se muestra como: {formatDisplayPhone(phone)}
             </span>
           </div>
           <div>
@@ -240,14 +185,14 @@ function SettingsPanel() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full bg-almadekh-teal hover:bg-almadekh-teal-light text-white font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-50"
+            className="w-full bg-almadekh-teal hover:bg-almadekh-teal-light text-almadekh-bg font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-50"
           >
             {saving ? 'Guardando...' : saved ? 'Guardado ✓' : 'Guardar Cambios'}
           </button>
         </div>
       </div>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4">
         <h3 className="text-xs font-semibold text-almadekh-text mb-3">Menú QR</h3>
         <p className="text-xs text-almadekh-muted mb-3">
           Compartí el link del menú digital con tus clientes.
@@ -255,19 +200,23 @@ function SettingsPanel() {
         <div className="flex items-center gap-2">
           <input
             readOnly
-            value="almadekh.com/menu"
+            value={menuUrl.replace(/^https?:\/\//, '')}
             className="flex-1 bg-almadekh-surface border border-almadekh-border rounded-lg px-3 py-2 text-xs text-almadekh-text"
           />
           <button
-            onClick={() => navigator.clipboard.writeText('https://almadekh.com/menu')}
-            className="bg-almadekh-teal hover:bg-almadekh-teal-light text-white text-xs font-bold px-3 py-2 rounded-lg transition-all"
+            onClick={() => {
+              navigator.clipboard.writeText(menuUrl)
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            }}
+            className="bg-almadekh-teal hover:bg-almadekh-teal-light text-almadekh-bg text-xs font-bold px-3 py-2 rounded-lg transition-all"
           >
-            Copiar
+            {copied ? 'Copiado ✓' : 'Copiar'}
           </button>
         </div>
       </div>
 
-      <div className="bg-white shadow-sm border border-almadekh-border rounded-xl p-4">
+      <div className="bg-almadekh-surface border border-almadekh-border rounded-xl p-4">
         <h3 className="text-xs font-semibold text-almadekh-text mb-3">Sistema</h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">

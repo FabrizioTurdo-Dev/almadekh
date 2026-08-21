@@ -5,6 +5,46 @@ import { AIUpload } from './AIUpload'
 import { uploadImage } from '../../lib/upload'
 import { removeBackground } from '../../lib/ai'
 import { formatPrice } from '../../lib/format'
+import { SaveError } from './SaveError'
+import type { Category, MenuItem } from '../../types'
+
+type UploadStatus = { state: 'idle' } | { state: 'processing'; step: string }
+
+/**
+ * Helpers de actualizacion inmutable.
+ *
+ * Antes cada handler hacia `const newCats = [...categories]` (copia
+ * superficial) y despues mutaba en profundidad: asignaba sobre
+ * `newCats[i].items[j]` y llamaba a `.push()` y `.splice()` sobre el mismo
+ * array que seguia referenciando el estado anterior. Eso dejaba el estado
+ * previo alterado, rompia cualquier comparacion por referencia y no dejaba
+ * ningun snapshot al que volver si fallaba el guardado remoto.
+ */
+function replaceItem(
+  cats: Category[],
+  catIdx: number,
+  itemIdx: number,
+  patch: Partial<MenuItem>
+): Category[] {
+  return cats.map((cat, ci) =>
+    ci !== catIdx
+      ? cat
+      : {
+          ...cat,
+          items: cat.items.map((item, ii) => (ii !== itemIdx ? item : { ...item, ...patch })),
+        }
+  )
+}
+
+function removeItem(cats: Category[], catIdx: number, itemIdx: number): Category[] {
+  return cats.map((cat, ci) =>
+    ci !== catIdx ? cat : { ...cat, items: cat.items.filter((_, ii) => ii !== itemIdx) }
+  )
+}
+
+function appendItem(cats: Category[], catIdx: number, item: MenuItem): Category[] {
+  return cats.map((cat, ci) => (ci !== catIdx ? cat : { ...cat, items: [...cat.items, item] }))
+}
 
 export function MenuEditor() {
   const { categories, activeCategory, setActiveCategory, setCategories } = useMenuStore()
@@ -16,54 +56,81 @@ export function MenuEditor() {
   const [showCatModal, setShowCatModal] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [newCatSpecial, setNewCatSpecial] = useState(true)
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>({ state: 'idle' })
+  const [saveError, setSaveError] = useState('')
 
   const cat = categories[activeCategory]
+
+  const save = async (cats: Category[]) => {
+    setSaveError('')
+    const result = await setCategories(cats)
+    if (result.error) setSaveError(result.error)
+  }
 
   const handleSaveItem = () => {
     if (!editingItem || !editName || !editPrice) return
     const price = parseInt(editPrice)
     if (isNaN(price) || price < 0) return
-    const newCats = [...categories]
-    const item = newCats[editingItem.catIdx].items[editingItem.itemIdx]
-    item.name = editName.trim().slice(0, 100)
-    item.desc = editDesc.trim().slice(0, 300)
-    item.price = price
-    setCategories(newCats)
+    const next = replaceItem(categories, editingItem.catIdx, editingItem.itemIdx, {
+      name: editName.trim().slice(0, 100),
+      desc: editDesc.trim().slice(0, 300),
+      price,
+    })
     setEditingItem(null)
+    void save(next)
   }
 
   const handleDeleteItem = (catIdx: number, itemIdx: number) => {
-    const newCats = [...categories]
-    newCats[catIdx].items.splice(itemIdx, 1)
-    setCategories(newCats)
+    void save(removeItem(categories, catIdx, itemIdx))
   }
 
   const handleAddItem = () => {
-    const newCats = [...categories]
-    const newId = 'item_' + Date.now()
-    newCats[activeCategory].items.push({ id: newId, name: 'Nuevo plato', desc: '', price: 0 })
-    setCategories(newCats)
-    const idx = newCats[activeCategory].items.length - 1
-    setEditingItem({ catIdx: activeCategory, itemIdx: idx })
+    const newItem = { id: 'item_' + Date.now(), name: 'Nuevo plato', desc: '', price: 0 }
+    const next = appendItem(categories, activeCategory, newItem)
+    setEditingItem({
+      catIdx: activeCategory,
+      itemIdx: next[activeCategory].items.length - 1,
+    })
     setEditName('Nuevo plato')
     setEditDesc('')
     setEditPrice('')
+    void save(next)
   }
 
   const handleImageUpload = async (catIdx: number, itemIdx: number, file: File) => {
-    const url = await uploadImage(file, 'menu')
-    if (!url) return
+    setUploadStatus({ state: 'processing', step: 'Procesando imagen...' })
+    const url = await uploadImage(file, 'menu', (step) => {
+      setUploadStatus({ state: 'processing', step })
+    })
+    if (!url) { setUploadStatus({ state: 'idle' }); return }
 
+    setUploadStatus({ state: 'processing', step: 'Aplicando fondo...' })
     const result = await removeBackground(url, 'menu')
 
-    const freshCats = [...useMenuStore.getState().categories]
-    if ('url' in result) {
-      freshCats[catIdx].items[itemIdx].image_url = result.url
-    } else {
+    // Se relee el estado: entre el `await` de la subida y el de la IA el menu
+    // pudo haber cambiado por realtime.
+    const fresh = useMenuStore.getState().categories
+    if (!('url' in result)) console.warn('removeBackground error:', result.error)
+    const next = replaceItem(fresh, catIdx, itemIdx, {
+      image_url: 'url' in result ? result.url : url,
+    })
+    setUploadStatus({ state: 'idle' })
+    await save(next)
+  }
+
+  const handleApplyBackground = async (catIdx: number, itemIdx: number) => {
+    const item = categories[catIdx]?.items[itemIdx]
+    if (!item?.image_url) return
+    setUploadStatus({ state: 'processing', step: 'Aplicando fondo...' })
+    const result = await removeBackground(item.image_url, 'menu')
+    const fresh = useMenuStore.getState().categories
+    setUploadStatus({ state: 'idle' })
+    if (!('url' in result)) {
       console.warn('removeBackground error:', result.error)
-      freshCats[catIdx].items[itemIdx].image_url = url
+      setSaveError(result.error)
+      return
     }
-    setCategories(freshCats)
+    await save(replaceItem(fresh, catIdx, itemIdx, { image_url: result.url }))
   }
 
   const handleAddCategory = () => {
@@ -75,7 +142,7 @@ export function MenuEditor() {
       is_special: newCatSpecial,
       items: [],
     }
-    setCategories([...categories, newCat])
+    void save([...categories, newCat])
     setActiveCategory(categories.length)
     setNewCatName('')
     setNewCatSpecial(true)
@@ -84,6 +151,15 @@ export function MenuEditor() {
 
   return (
     <div className="pb-28">
+      <SaveError message={saveError} />
+
+      {uploadStatus.state === 'processing' && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-almadekh-teal text-almadekh-bg text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
+          <span className="inline-block animate-spin">⏳</span>
+          {uploadStatus.step}
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-serif font-bold text-almadekh-text">Editor de Menú</h2>
@@ -94,13 +170,13 @@ export function MenuEditor() {
         <div className="flex gap-2">
           <button
             onClick={() => setShowCatModal(true)}
-            className="bg-almadekh-gold hover:bg-almadekh-gold-light text-white text-xs font-bold px-4 py-2 rounded-full transition-all"
+            className="bg-almadekh-gold hover:bg-almadekh-gold-light text-almadekh-bg text-xs font-bold px-4 py-2 rounded-full transition-all"
           >
             + Categoría
           </button>
           <button
             onClick={handleAddItem}
-            className="bg-almadekh-teal hover:bg-almadekh-teal-light text-white text-xs font-bold px-4 py-2 rounded-full transition-all"
+            className="bg-almadekh-teal hover:bg-almadekh-teal-light text-almadekh-bg text-xs font-bold px-4 py-2 rounded-full transition-all"
           >
             + Agregar
           </button>
@@ -117,9 +193,9 @@ export function MenuEditor() {
                 className={`px-3.5 py-2 rounded-full text-[11px] font-semibold transition-all ${
                   idx === activeCategory
                     ? c.is_special
-                      ? 'bg-almadekh-gold text-white'
-                      : 'bg-almadekh-teal text-white'
-                    : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border hover:bg-almadekh-cream'
+                      ? 'bg-almadekh-gold text-almadekh-bg'
+                      : 'bg-almadekh-teal text-almadekh-bg'
+                    : 'bg-almadekh-surface text-almadekh-subdued border border-almadekh-border hover:bg-almadekh-gold/10'
                 }`}
               >
                 {c.is_special && '⭐ '}{c.name} ({c.items.length})
@@ -127,9 +203,11 @@ export function MenuEditor() {
               {!isFixed && (
                 <button
                   onClick={() => {
-                    const newCats = [...categories]
-                    newCats[idx].is_special = !newCats[idx].is_special
-                    setCategories(newCats)
+                    void save(
+                      categories.map((c2, ci) =>
+                        ci !== idx ? c2 : { ...c2, is_special: !c2.is_special }
+                      )
+                    )
                   }}
                   className={`text-xs px-1.5 py-1 rounded-full transition-all ${
                     c.is_special
@@ -149,7 +227,7 @@ export function MenuEditor() {
       {cat?.items.map((item, idx) => (
         <div
           key={item.id}
-          className="bg-white shadow-sm border border-almadekh-border rounded-xl p-3.5 mb-2 flex items-center gap-3"
+          className="bg-almadekh-surface border border-almadekh-border rounded-xl p-3.5 mb-2 flex items-center gap-3"
         >
           <div className="w-10 h-10 rounded-lg bg-almadekh-surface shrink-0 flex items-center justify-center text-lg overflow-hidden">
             {item.image_url ? (
@@ -163,8 +241,19 @@ export function MenuEditor() {
             <span className="text-[10px] text-almadekh-muted">{formatPrice(item.price)}</span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            {item.image_url && (
+              <button
+                onClick={() => handleApplyBackground(activeCategory, idx)}
+                disabled={uploadStatus.state === 'processing'}
+                className="text-almadekh-subdued hover:text-almadekh-gold transition-colors text-sm p-1"
+                title="Aplicar fondo"
+              >
+                🎨
+              </button>
+            )}
             <AIUpload
               onUpload={(file) => handleImageUpload(activeCategory, idx, file)}
+              progress={uploadStatus.state === 'processing' ? uploadStatus.step : undefined}
             />
             <button
               onClick={() => {
@@ -238,7 +327,7 @@ export function MenuEditor() {
                 </button>
                 <button
                   onClick={handleSaveItem}
-                  className="flex-1 bg-almadekh-teal hover:bg-almadekh-teal-light text-white font-bold py-2.5 rounded-xl transition-all text-sm"
+                  className="flex-1 bg-almadekh-teal hover:bg-almadekh-teal-light text-almadekh-bg font-bold py-2.5 rounded-xl transition-all text-sm"
                 >
                   Guardar
                 </button>
@@ -308,7 +397,7 @@ export function MenuEditor() {
               >
                 <span className="text-sm font-medium">⭐ Categoría Especial</span>
                 <div className={`w-10 h-5 rounded-full transition-all relative ${newCatSpecial ? 'bg-almadekh-gold' : 'bg-almadekh-border'}`}>
-                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${newCatSpecial ? 'left-5.5' : 'left-0.5'}`} />
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-almadekh-surface shadow transition-all ${newCatSpecial ? 'left-5.5' : 'left-0.5'}`} />
                 </div>
               </button>
               <div className="flex gap-3 pt-2">
@@ -321,7 +410,7 @@ export function MenuEditor() {
                 <button
                   onClick={handleAddCategory}
                   disabled={!newCatName.trim()}
-                  className="flex-1 bg-almadekh-gold hover:bg-almadekh-gold-light text-white font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-40"
+                  className="flex-1 bg-almadekh-gold hover:bg-almadekh-gold-light text-almadekh-bg font-bold py-2.5 rounded-xl transition-all text-sm disabled:opacity-40"
                 >
                   Crear
                 </button>
