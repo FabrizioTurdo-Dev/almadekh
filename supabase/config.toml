@@ -1,0 +1,12 @@
+project_id = "iltzqmfaojwcnldumnac"
+
+# create-order es un endpoint publico a proposito: los clientes que hacen un
+# pedido no tienen sesion. La funcion valida todo por su cuenta (nombre,
+# modalidad, cantidades) y calcula el total leyendo `menu_items`, asi que no
+# confia en nada de lo que manda el navegador.
+[functions.create-order]
+verify_jwt = false
+
+# remove-bg si exige sesion: solo el admin puede gastar creditos de remove.bg.
+[functions.remove-bg]
+verify_jwt = true

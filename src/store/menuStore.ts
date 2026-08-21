@@ -2,12 +2,13 @@ import { create } from 'zustand'
 import type { Category } from '../types'
 import { DEFAULT_MENU } from '../data/menuData'
 import { supabase } from '../lib/supabase'
-import type { RealtimeChannel } from '@supabase/supabase-js'
+import { createRealtimeChannel } from '../lib/realtime'
 
 interface MenuState {
   categories: Category[]
   activeCategory: number
-  setCategories: (cats: Category[]) => void
+  /** Devuelve `{ error }` si el guardado remoto fallo, para poder avisarlo. */
+  setCategories: (cats: Category[]) => Promise<{ error?: string }>
   setActiveCategory: (idx: number) => void
   loadFromStorage: () => () => void
 }
@@ -117,34 +118,7 @@ const cache = {
   },
 }
 
-let realtimeChannel: RealtimeChannel | null = null
-
-function subscribeToRealtime(onChange: () => void) {
-  if (realtimeChannel) {
-    supabase.removeChannel(realtimeChannel)
-  }
-
-  realtimeChannel = supabase
-    .channel('menu-changes')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'categories' },
-      () => onChange()
-    )
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'menu_items' },
-      () => onChange()
-    )
-    .subscribe()
-
-  return () => {
-    if (realtimeChannel) {
-      supabase.removeChannel(realtimeChannel)
-      realtimeChannel = null
-    }
-  }
-}
+const subscribeToRealtime = createRealtimeChannel('menu-changes', ['categories', 'menu_items'])
 
 export const useMenuStore = create<MenuState>((set) => ({
   categories: DEFAULT_MENU,
@@ -154,12 +128,23 @@ export const useMenuStore = create<MenuState>((set) => ({
     cache.save(cats)
     try {
       await pushToSupabase()
+      return {}
     } catch (e) {
       console.error('[MenuStore] Supabase sync error:', e)
+      // El cambio queda en pantalla para no perder lo que el usuario escribio,
+      // pero se devuelve el error para que el panel lo muestre: antes se
+      // tragaba en la consola y la carta figuraba guardada sin estarlo.
+      return { error: 'No se pudo guardar en el servidor. Revisá tu conexión e intentá de nuevo.' }
     }
   },
   setActiveCategory: (idx) => set({ activeCategory: idx }),
   loadFromStorage: () => {
+    // Primero lo ultimo que vio el visitante. Sin esto, con Supabase caido
+    // quedaba a la vista DEFAULT_MENU (datos de ejemplo) en lugar de la carta
+    // real: el cache se escribia y no se leia nunca.
+    const cached = cache.load()
+    if (cached) set({ categories: cached })
+
     const refreshFromRemote = async () => {
       try {
         const fromRemote = await pullFromSupabase()

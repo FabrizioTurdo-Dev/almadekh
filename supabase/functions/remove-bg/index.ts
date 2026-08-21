@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 const ALLOWED_ORIGINS = [
   "https://almadekh.com",
   "https://almadekh-tan.vercel.app",
+  "http://localhost:5173",
 ]
 
 const ALLOWED_FOLDERS = ["menu", "events"]
@@ -15,7 +16,29 @@ function getCorsHeaders(origin: string | null) {
   return {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Vary": "Origin",
   }
+}
+
+/**
+ * Solo se aceptan imagenes ya subidas a nuestro propio bucket publico.
+ *
+ * Sin este chequeo cualquier usuario logueado podia mandar una URL arbitraria y
+ * usar la API key de remove.bg (que es nuestra) para buscar recursos de terceros
+ * y quemar los creditos del mes.
+ */
+function isOwnStorageUrl(value: unknown, supabaseUrl: string): value is string {
+  if (typeof value !== "string") return false
+  let parsed: URL
+  try {
+    parsed = new URL(value)
+  } catch {
+    return false
+  }
+  if (parsed.protocol !== "https:") return false
+  const expectedHost = new URL(supabaseUrl).host
+  if (parsed.host !== expectedHost) return false
+  return parsed.pathname.startsWith("/storage/v1/object/public/almadekh/")
 }
 
 serve(async (req) => {
@@ -51,9 +74,9 @@ serve(async (req) => {
 
     const { imageUrl, folder = "menu" } = await req.json()
 
-    if (!imageUrl) {
+    if (!isOwnStorageUrl(imageUrl, supabaseUrl)) {
       return new Response(
-        JSON.stringify({ error: "imageUrl es requerido" }),
+        JSON.stringify({ error: "imageUrl no válida" }),
         { status: 400, headers: { ...CORS, "Content-Type": "application/json" } }
       )
     }

@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { formatDisplayPhone, formatTelPhone } from './phone'
 
 export interface Settings {
   phone: string
@@ -65,24 +66,11 @@ export function getPhone(): string {
 }
 
 export function getDisplayPhone(): string {
-  const raw = getPhone()
-  // Strip country code (549 or 54) for display
-  let local = raw
-  if (raw.startsWith('549')) local = raw.slice(3)
-  else if (raw.startsWith('54')) local = raw.slice(2)
-  // Format: 011 6972-XXXX
-  if (local.length === 10) {
-    return `${local.slice(0, 3)} ${local.slice(3, 7)}-${local.slice(7)}`
-  }
-  return raw
+  return formatDisplayPhone(getPhone())
 }
 
 export function getTelPhone(): string {
-  const raw = getPhone()
-  // For tel: links, strip country code
-  if (raw.startsWith('549')) return raw.slice(3)
-  if (raw.startsWith('54')) return raw.slice(2)
-  return raw
+  return formatTelPhone(getPhone())
 }
 
 export async function saveSetting(key: string, value: string): Promise<void> {

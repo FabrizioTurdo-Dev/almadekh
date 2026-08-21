@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Event as EventType } from '../types'
 import { supabase } from '../lib/supabase'
-import type { RealtimeChannel } from '@supabase/supabase-js'
+import { createRealtimeChannel } from '../lib/realtime'
 
 const DEFAULT_EVENTS: EventType[] = [
   {
@@ -43,10 +43,11 @@ const DEFAULT_EVENTS: EventType[] = [
 
 interface EventState {
   events: EventType[]
-  setEvents: (events: EventType[]) => void
-  addEvent: (event: EventType) => void
-  updateEvent: (id: string, data: Partial<EventType>) => void
-  deleteEvent: (id: string) => void
+  // Devuelven `{ error }` si el guardado remoto fallo, para poder avisarlo.
+  setEvents: (events: EventType[]) => Promise<{ error?: string }>
+  addEvent: (event: EventType) => Promise<{ error?: string }>
+  updateEvent: (id: string, data: Partial<EventType>) => Promise<{ error?: string }>
+  deleteEvent: (id: string) => Promise<{ error?: string }>
   loadFromStorage: () => () => void
 }
 
@@ -93,29 +94,7 @@ async function pullEventsFromSupabase(): Promise<EventType[] | null> {
   }))
 }
 
-let realtimeChannel: RealtimeChannel | null = null
-
-function subscribeToRealtime(onChange: () => void) {
-  if (realtimeChannel) {
-    supabase.removeChannel(realtimeChannel)
-  }
-
-  realtimeChannel = supabase
-    .channel('events-changes')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'events' },
-      () => onChange()
-    )
-    .subscribe()
-
-  return () => {
-    if (realtimeChannel) {
-      supabase.removeChannel(realtimeChannel)
-      realtimeChannel = null
-    }
-  }
-}
+const subscribeToRealtime = createRealtimeChannel('event-changes', ['events'])
 
 export const useEventStore = create<EventState>((set, get) => ({
   events: DEFAULT_EVENTS,
@@ -136,8 +115,10 @@ export const useEventStore = create<EventState>((set, get) => ({
         { onConflict: 'id', ignoreDuplicates: false }
       )
       if (error) throw error
+      return {}
     } catch (e) {
       console.error('[EventStore] Supabase sync error:', e)
+      return { error: 'No se pudo guardar en el servidor. Revisá tu conexión e intentá de nuevo.' }
     }
   },
   addEvent: async (event) => {
@@ -155,8 +136,10 @@ export const useEventStore = create<EventState>((set, get) => ({
         type: event.type,
       })
       if (error) throw error
+      return {}
     } catch (e) {
       console.error('[EventStore] Supabase insert error:', e)
+      return { error: 'No se pudo guardar en el servidor. Revisá tu conexión e intentá de nuevo.' }
     }
   },
   updateEvent: async (id, data) => {
@@ -178,8 +161,10 @@ export const useEventStore = create<EventState>((set, get) => ({
         })
         .eq('id', id)
       if (error) throw error
+      return {}
     } catch (e) {
       console.error('[EventStore] Supabase update error:', e)
+      return { error: 'No se pudo guardar en el servidor. Revisá tu conexión e intentá de nuevo.' }
     }
   },
   deleteEvent: async (id) => {
@@ -189,11 +174,18 @@ export const useEventStore = create<EventState>((set, get) => ({
     try {
       const { error } = await supabase.from('events').delete().eq('id', id)
       if (error) throw error
+      return {}
     } catch (e) {
       console.error('[EventStore] Supabase delete error:', e)
+      return { error: 'No se pudo guardar en el servidor. Revisá tu conexión e intentá de nuevo.' }
     }
   },
   loadFromStorage: () => {
+    // Igual que en menuStore: el cache se escribia y no se leia, asi que sin
+    // conexion se mostraban los eventos de ejemplo en vez de los reales.
+    const cached = cache.load()
+    if (cached) set({ events: cached })
+
     const refreshFromRemote = async () => {
       try {
         const fromRemote = await pullEventsFromSupabase()

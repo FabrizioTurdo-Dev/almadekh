@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Order } from '../types'
 import { supabase } from '../lib/supabase'
-import type { RealtimeChannel } from '@supabase/supabase-js'
+import { createRealtimeChannel } from '../lib/realtime'
 
 interface OrderState {
   orders: Order[]
@@ -30,28 +30,31 @@ const cache = {
   },
 }
 
-let realtimeChannel: RealtimeChannel | null = null
+const subscribeToRealtime = createRealtimeChannel('orders-changes', ['orders'])
 
-function subscribeToRealtime(onChange: () => void) {
-  if (realtimeChannel) {
-    supabase.removeChannel(realtimeChannel)
-  }
+/**
+ * Filtros de fecha puros.
+ *
+ * Viven fuera del store para que `Dashboard` pueda usarlos dentro de un
+ * `useMemo` con `orders` como unica dependencia. Como metodos del store leian
+ * `get().orders` por dentro, y el `useMemo` declaraba una dependencia que el
+ * linter no podia verificar.
+ */
+export function ordersToday(orders: Order[]): Order[] {
+  const now = new Date()
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  return orders.filter((o) => new Date(o.created_at) >= startOfDay)
+}
 
-  realtimeChannel = supabase
-    .channel('orders-changes')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'orders' },
-      () => onChange()
-    )
-    .subscribe()
-
-  return () => {
-    if (realtimeChannel) {
-      supabase.removeChannel(realtimeChannel)
-      realtimeChannel = null
-    }
-  }
+export function ordersThisWeek(orders: Order[]): Order[] {
+  const now = new Date()
+  const startOfWeek = new Date(now)
+  // getDay() da 0 para domingo: la semana arrancaba en domingo. Aca se corre
+  // al lunes, que es como se cuenta la semana comercial.
+  const daysSinceMonday = (now.getDay() + 6) % 7
+  startOfWeek.setDate(now.getDate() - daysSinceMonday)
+  startOfWeek.setHours(0, 0, 0, 0)
+  return orders.filter((o) => new Date(o.created_at) >= startOfWeek)
 }
 
 function rowToOrder(row: Record<string, unknown>): Order {
@@ -109,19 +112,8 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     }
   },
 
-  getTodayOrders: () => {
-    const now = new Date()
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    return get().orders.filter((o) => new Date(o.created_at) >= startOfDay)
-  },
-
-  getThisWeekOrders: () => {
-    const now = new Date()
-    const startOfWeek = new Date(now)
-    startOfWeek.setDate(now.getDate() - now.getDay())
-    startOfWeek.setHours(0, 0, 0, 0)
-    return get().orders.filter((o) => new Date(o.created_at) >= startOfWeek)
-  },
+  getTodayOrders: () => ordersToday(get().orders),
+  getThisWeekOrders: () => ordersThisWeek(get().orders),
 }))
 
 export function initOrdersRealtime() {
