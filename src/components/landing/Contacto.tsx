@@ -161,12 +161,38 @@ export function Contacto() {
           </div>
         )}
 
+        {/* Reseña externa — Broccolino.com.ar (guía de restaurantes).
+            Resumen propio, no reproduce el artículo original (derechos de autor);
+            el link lleva a la reseña completa en la fuente. */}
+        <motion.a
+          href="https://broccolino.com.ar/restaurante/alma-dekh/"
+          target="_blank"
+          rel="noopener noreferrer"
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          whileHover={{ y: -3, transition: { duration: 0.2 } }}
+          className="block mt-8 mb-8 max-w-2xl mx-auto bg-baroque-dark-sec border-2 border-baroque-gold/15 rounded-2xl p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:border-baroque-gold/30 hover:shadow-[0_0_25px_rgba(184,134,11,0.1)] transition-all group"
+        >
+          <span className="inline-block text-[10px] tracking-[2px] uppercase text-baroque-gold font-semibold mb-3">
+            10/10 en Broccolino · 22 reseñas
+          </span>
+          <p className="text-sm text-baroque-cream-muted leading-relaxed mb-4">
+            "Los Pilares de la Experiencia Alma Dekh
+            Un Ambiente que Cautiva
+            El principal atractivo que emana de las opiniones y las imágenes disponibles es su atmósfera. Lejos de la estética estandarizada de muchas cadenas de restaurantes, Alma Dekh apuesta por una ambientación que se siente como el living de una casa, pero con un toque bohemio y artístico. Los clientes destacan la sensación de estar "como en casa", un espacio donde los niños pueden jugar con libertad gracias a la disposición de juguetes, y los adultos pueden relajarse en un entorno que invita a la calma. Esta sensación de hogar, de "calor de hogar", es un tema recurrente y parece ser el resultado directo de una visión muy clara por parte de su propietaria."
+          </p>
+          <span className="inline-flex items-center gap-1 text-xs text-baroque-gold font-semibold group-hover:underline">
+            Leer la reseña completa en Broccolino →
+          </span>
+        </motion.a>
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
-          className="flex flex-col sm:flex-row gap-3 max-w-lg"
+          className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
         >
           <a
             href="https://maps.google.com/?q=La+Pista+250+Ingeniero+Maschwitz"
