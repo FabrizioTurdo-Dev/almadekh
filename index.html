@@ -5,6 +5,11 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
     <!-- CSP: se define como header HTTP en vercel.json (fuente unica de verdad) -->
+    <!-- Bumpear en cada cambio de headers de vercel.json. El service worker
+         precachea index.html JUNTO CON sus headers de respuesta, asi que un
+         ajuste de CSP no llega a quien ya tiene la PWA instalada salvo que
+         cambie el contenido de este archivo y se invalide el precache. -->
+    <meta name="build-version" content="2026-08-21-csp-sociablekit" />
     <meta name="theme-color" content="#0A0704" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
